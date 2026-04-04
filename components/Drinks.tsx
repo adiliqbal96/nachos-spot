@@ -45,7 +45,7 @@ export default function Drinks() {
   return (
     <section
       id="drinks"
-      className="relative py-16 px-[5vw] overflow-hidden"
+      className="relative py-16 px-[5vw] overflow-hidden min-h-screen"
       style={{ background: "#050404" }}
     >
       {/* Background — cold-graded image */}
@@ -156,7 +156,7 @@ export default function Drinks() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="text-[clamp(40px,6vw,80px)] tracking-wide mb-16 text-[#DDA221]"
+          className="text-[clamp(36px,6vw,80px)] tracking-wide mb-8 lg:mb-16 text-[#DDA221]"
           style={{
             fontFamily: "var(--font-bangers)",
             textShadow:
@@ -166,7 +166,7 @@ export default function Drinks() {
           DRINKS TIL DIN FEST
         </motion.h2>
 
-        <div className="grid grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {DRINKS.map((drink, i) => (
             <motion.div
               key={i}
