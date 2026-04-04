@@ -45,7 +45,7 @@ export default function Drinks() {
   return (
     <section
       id="drinks"
-      className="relative py-16 px-[5vw] overflow-hidden min-h-screen"
+      className="relative py-16 px-[5vw] overflow-hidden min-h-screen scroll-mt-20"
       style={{ background: "#050404" }}
     >
       {/* Background — cold-graded image */}
@@ -180,7 +180,7 @@ export default function Drinks() {
                 rest: {
                   y: 0,
                   scale: 1,
-                  boxShadow: "0 8px 40px rgba(0,0,0,0.6)",
+                  boxShadow: `0 8px 40px rgba(0,0,0,0.6), 0 2px 20px ${drink.glow.replace("0.55", "0.2")}`,
                 },
                 hover: {
                   y: -14,
@@ -192,7 +192,7 @@ export default function Drinks() {
               className="relative overflow-hidden cursor-pointer"
               style={{
                 background: "rgba(10,8,8,0.85)",
-                border: "1px solid rgba(221,162,33,0.08)",
+                border: `1px solid ${drink.border}`,
                 backdropFilter: "blur(18px)",
               }}
             >

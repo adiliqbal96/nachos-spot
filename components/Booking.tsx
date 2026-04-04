@@ -7,7 +7,7 @@ export default function Booking() {
   return (
     <section
       id="booking"
-      className="relative min-h-screen py-24 px-[5vw] overflow-hidden flex items-center bg-[#050404]"
+      className="relative min-h-screen py-24 px-[5vw] overflow-hidden flex items-center bg-[#050404] scroll-mt-20"
     >
       {/* Background — warmer cart photo */}
       <div className="absolute inset-0 pointer-events-none">

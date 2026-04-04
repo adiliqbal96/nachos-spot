@@ -44,7 +44,7 @@ export default function Hero() {
       id="hero"
       ref={containerRef}
       onMouseMove={onSectionMouseMove}
-      className="relative min-h-screen flex items-center justify-start overflow-hidden px-[5vw] pt-24"
+      className="relative min-h-screen flex items-center justify-start overflow-hidden px-[5vw] pt-24 scroll-mt-0"
     >
       {/* Background */}
       <motion.div style={{ y: yBg }} className="absolute inset-0 w-full h-[120vh]">
@@ -53,7 +53,7 @@ export default function Hero() {
           alt="Nachos Spot Founders"
           fill
           priority
-          className="object-cover object-center"
+          className="object-contain md:object-cover object-center md:object-[center_20%]"
           style={{ animation: "slowZoom 12s ease-in-out infinite alternate" }}
         />
         <div className="absolute inset-0 bg-[#050404]/60 mix-blend-multiply" />

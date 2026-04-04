@@ -33,7 +33,7 @@ export default function FoodBreak() {
     <section
       id="experience"
       ref={containerRef}
-      className="relative py-20 md:py-24 px-[5vw] overflow-hidden"
+      className="relative py-20 md:py-24 px-[5vw] overflow-hidden scroll-mt-20"
     >
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 60% 50%, rgba(180,70,0,0.07) 0%, transparent 65%)" }} />

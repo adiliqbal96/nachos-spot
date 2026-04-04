@@ -23,7 +23,7 @@ export default function Events() {
     <section
       id="events"
       ref={containerRef}
-      className="relative min-h-screen py-20 lg:py-32 px-[5vw] overflow-hidden bg-[#050404]"
+      className="relative min-h-screen py-20 lg:py-32 px-[5vw] overflow-hidden bg-[#050404] scroll-mt-20"
     >
       <div className="absolute pointer-events-none" style={{ left: "-5%", top: "10%", width: "60%", height: "80%", background: "radial-gradient(ellipse at 40% 50%, rgba(180,70,0,0.18) 0%, transparent 65%)", filter: "blur(50px)" }} />
 
