@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { useEffect, useRef } from "react";
 import { img } from "@/lib/basePath";
 
 const DRINKS = [
@@ -43,6 +44,20 @@ const DROPS = Array.from({ length: 20 }, (_, i) => ({
 }));
 
 export default function Drinks() {
+  const sliderRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+    const dots = document.querySelectorAll("#drinks-dots span");
+    const onScroll = () => {
+      const idx = Math.round(slider.scrollLeft / slider.offsetWidth);
+      dots.forEach((d, i) => d.classList.toggle("active", i === idx));
+    };
+    slider.addEventListener("scroll", onScroll, { passive: true });
+    return () => slider.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <section
       id="drinks"
@@ -167,7 +182,7 @@ export default function Drinks() {
           DRINKS TIL DIN FEST
         </motion.h2>
 
-        <div id="drinks-slider" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div id="drinks-slider" ref={sliderRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {DRINKS.map((drink, i) => (
             <motion.div
               key={i}
@@ -306,6 +321,13 @@ export default function Drinks() {
                 }}
               />
             </motion.div>
+          ))}
+        </div>
+
+        {/* Pagination dots — mobile only */}
+        <div id="drinks-dots" className="lg:hidden">
+          {DRINKS.map((_, i) => (
+            <span key={i} className={i === 0 ? "active" : ""} />
           ))}
         </div>
       </div>

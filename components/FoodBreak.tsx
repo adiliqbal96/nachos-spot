@@ -34,13 +34,13 @@ export default function FoodBreak() {
     <section
       id="experience"
       ref={containerRef}
-      className="relative py-20 md:py-24 px-[5vw] overflow-hidden scroll-mt-20"
+      className="relative min-h-screen py-20 md:py-24 px-[5vw] overflow-hidden scroll-mt-20 flex items-center"
     >
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 60% 50%, rgba(180,70,0,0.07) 0%, transparent 65%)" }} />
       </div>
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col lg:flex-row gap-10 lg:gap-20 items-center justify-between">
+      <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col lg:flex-row gap-10 lg:gap-20 items-center justify-between py-4">
 
         {/* Text */}
         <div className="flex-1 w-full">
