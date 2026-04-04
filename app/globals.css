@@ -52,6 +52,125 @@
   50%       { box-shadow: 0 0 28px rgba(221,162,33,0.7), inset 0 0 18px rgba(221,162,33,0.1); }
 }
 
+/* ─── MOBILE OPTIMIZATIONS (max-width: 768px) ─────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* ── Global ── */
+  html { overflow-x: hidden; }
+  body { overflow-x: hidden; }
+
+  /* ── Hero ── */
+  #hero {
+    padding-top: 100px;
+    padding-bottom: 48px;
+    min-height: 100svh;
+  }
+  #hero .kicker {
+    font-size: 11px;
+    letter-spacing: 3px;
+    margin-bottom: 16px;
+  }
+
+  /* Full-width CTA on mobile */
+  #hero a[href="#booking"] {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 18px 24px;
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
+
+  /* ── FoodBreak ── */
+  #experience {
+    padding-top: 60px;
+    padding-bottom: 60px;
+  }
+
+  /* ── Events ── */
+  #events {
+    padding-top: 60px;
+    padding-bottom: 60px;
+    min-height: unset;
+  }
+  #events a[href="#booking"] {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 18px 24px;
+  }
+
+  /* ── Drinks — horizontal swipe slider ── */
+  #drinks {
+    padding-top: 60px;
+    padding-bottom: 60px;
+    min-height: unset;
+  }
+
+  /* Override the grid and make it a snap slider */
+  #drinks-slider, #drinks .grid {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    gap: 16px !important;
+    padding-bottom: 16px;
+    /* hide scrollbar */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    /* allow scroll outside section padding */
+    margin-left: calc(-5vw);
+    margin-right: calc(-5vw);
+    padding-left: 5vw;
+    padding-right: 5vw;
+  }
+  #drinks-slider::-webkit-scrollbar,
+  #drinks .grid::-webkit-scrollbar { display: none; }
+
+  /* Each card snaps and takes 80% width */
+  #drinks-slider > *,
+  #drinks .grid > * {
+    flex: 0 0 78vw !important;
+    scroll-snap-align: center;
+    max-width: 78vw;
+  }
+
+  /* Scroll hint dots indicator */
+  #drinks .grid::after {
+    content: "";
+    flex: 0 0 5vw;
+  }
+
+  /* ── Booking form ── */
+  #booking {
+    padding-top: 80px;
+    padding-bottom: 60px;
+  }
+  #booking input {
+    font-size: 16px !important; /* prevent iOS zoom */
+    padding: 16px 0 !important;
+  }
+  #booking button[type="submit"] {
+    width: 100%;
+    padding: 20px;
+    font-size: 14px;
+    letter-spacing: 2px;
+    margin-top: 8px;
+  }
+
+  /* ── Tags — bigger tap targets ── */
+  .tag-item {
+    padding: 8px 14px;
+    font-size: 10px;
+  }
+
+  /* ── General section spacing ── */
+  section { scroll-margin-top: 80px; }
+}
+
+/* ─── END MOBILE ─────────────────────────────────────────────────────────── */
+
 @layer utilities {
   .cinematic-bg {
     position: absolute;

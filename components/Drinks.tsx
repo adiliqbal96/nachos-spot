@@ -167,7 +167,7 @@ export default function Drinks() {
           DRINKS TIL DIN FEST
         </motion.h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div id="drinks-slider" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {DRINKS.map((drink, i) => (
             <motion.div
               key={i}
