@@ -1,27 +1,21 @@
 import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
-import Ticker from "@/components/Ticker";
-import Statement from "@/components/Statement";
-import Menu from "@/components/Menu";
 import FoodBreak from "@/components/FoodBreak";
 import Events from "@/components/Events";
+import Drinks from "@/components/Drinks";
 import Booking from "@/components/Booking";
-import Social from "@/components/Social";
 import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
-    <>
+    <main className="relative bg-[#050404] min-h-screen overflow-hidden">
       <Nav />
       <Hero />
-      <Ticker />
-      <Statement />
-      <Menu />
-      <FoodBreak />
+<FoodBreak />
       <Events />
+      <Drinks />
       <Booking />
-      <Social />
       <Footer />
-    </>
+    </main>
   );
 }

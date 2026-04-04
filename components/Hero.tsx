@@ -1,166 +1,171 @@
 "use client";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+
+import {
+  motion,
+  useMotionValue,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import Image from "next/image";
+import { useRef } from "react";
 
 export default function Hero() {
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], [0, 120]);
-  const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+  const containerRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
+  const yBg = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+
+  // ── 3D tilt ──────────────────────────────────────────────────────────
+  const mouseX = useMotionValue(960);
+  const mouseY = useMotionValue(540);
+  const smoothX = useSpring(mouseX, { stiffness: 55, damping: 20 });
+  const smoothY = useSpring(mouseY, { stiffness: 55, damping: 20 });
+  const rotateY = useTransform(smoothX, [0, 1920], [-4, 4]);
+  const rotateX = useTransform(smoothY, [0, 1080], [2.5, -2.5]);
+
+
+  // ── Magnetic CTA ──────────────────────────────────────────────────────
+  const btnX = useSpring(0, { stiffness: 280, damping: 22 });
+  const btnY = useSpring(0, { stiffness: 280, damping: 22 });
+
+  function onSectionMouseMove(e: React.MouseEvent<HTMLElement>) {
+    mouseX.set(e.clientX);
+    mouseY.set(e.clientY);
+  }
+
+  function onBtnMouseMove(e: React.MouseEvent<HTMLAnchorElement>) {
+    const r = e.currentTarget.getBoundingClientRect();
+    btnX.set((e.clientX - r.left - r.width / 2) * 0.45);
+    btnY.set((e.clientY - r.top - r.height / 2) * 0.45);
+  }
 
   return (
     <section
-      ref={ref}
       id="hero"
-      style={{
-        height: "100vh", minHeight: 600,
-        position: "relative", overflow: "hidden",
-        display: "flex", alignItems: "flex-end",
-      }}
+      ref={containerRef}
+      onMouseMove={onSectionMouseMove}
+      className="relative min-h-screen flex items-center justify-start overflow-hidden px-[5vw] pt-24"
     >
-      {/* Background */}
-      <div style={{
-        position: "absolute", inset: 0,
-        background: `
-          radial-gradient(ellipse 100% 100% at 50% 50%, transparent 30%, rgba(11,6,3,0.7) 100%),
-          radial-gradient(ellipse 80% 60% at 55% 35%, rgba(210,90,0,0.35) 0%, transparent 65%),
-          radial-gradient(ellipse 100% 50% at 50% 100%, rgba(11,6,3,0.9) 0%, transparent 60%),
-          #1c0d04`,
-      }} />
-
-      {/* Parallax food image */}
-      <motion.div
-        style={{
-          position: "absolute", right: 0, top: 0, bottom: 0,
-          height: "100%", width: "55vw",
-          y,
-        }}
-      >
+      {/* ── Background ── */}
+      <motion.div style={{ y: yBg }} className="absolute inset-0 w-full h-[120vh]">
         <Image
-          src="/hero.png"
-          alt="Nachos Spot"
+          src="/images/hero-founders.png"
+          alt="Nachos Spot Founders"
           fill
           priority
-          quality={90}
-          sizes="55vw"
-          style={{
-            objectFit: "cover",
-            objectPosition: "center top",
-            maskImage: "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.85) 28%, black 52%)",
-            WebkitMaskImage: "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.85) 28%, black 52%)",
-          }}
+          className="object-cover object-center"
+          style={{ animation: "slowZoom 12s ease-in-out infinite alternate" }}
         />
+        <div className="absolute inset-0 bg-[#050404]/60 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-black/40" />
+        {/* Heat wave */}
+        <div className="absolute inset-0 pointer-events-none" style={{ backdropFilter: 'blur(0.6px)', animation: 'heatWave 6s ease-in-out infinite' }} />
       </motion.div>
 
-      {/* Text */}
+{/* ── 3D-tilt content ── */}
       <motion.div
-        style={{ position: "relative", zIndex: 2, padding: "0 5vw 7vh", width: "100%", opacity }}
+        className="relative z-10 max-w-[65%]"
+        style={{ rotateY, rotateX, transformPerspective: 1400 }}
       >
         <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          style={{
-            fontFamily: "'Barlow Condensed', sans-serif",
-            fontStyle: "italic",
-            fontSize: "clamp(13px,1.4vw,17px)",
-            letterSpacing: "0.1em",
-            color: "var(--y)",
-            marginBottom: 12,
-            display: "flex", alignItems: "center", gap: 10,
-          }}
-        >
-          <span style={{ width: 40, height: 1, background: "var(--y)", display: "inline-block" }} />
-          Nachosvogn til events
-        </motion.div>
-
-        <motion.h1
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.9, ease: "easeOut" }}
-          style={{
-            fontFamily: "'Oswald', sans-serif",
-            fontSize: "clamp(68px,14vw,200px)",
-            lineHeight: 0.88,
-            letterSpacing: "-0.02em",
-            textTransform: "uppercase",
-            color: "#fff",
-          }}
+          transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="kicker"
         >
-          MELT<br />
-          <span style={{ WebkitTextStroke: "2px rgba(255,255,255,0.25)", color: "transparent" }}>EVERY</span><br />
-          <span style={{ color: "var(--y)" }}>NIGHT</span>
-        </motion.h1>
+          INGEN FRYSERE — BARE SMELTET OST
+        </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.7 }}
-          style={{
-            display: "flex", justifyContent: "space-between",
-            alignItems: "flex-end", marginTop: 24,
-          }}
+          transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="relative z-10 flex flex-col items-start mb-10"
         >
-          <p style={{
-            fontFamily: "'Barlow Condensed', sans-serif",
-            fontStyle: "italic",
-            fontSize: "clamp(15px,1.8vw,22px)",
-            color: "rgba(240,230,208,0.5)",
-            letterSpacing: "0.06em",
-            maxWidth: 400, lineHeight: 1.45,
-          }}>
-            Vi ruller ind. Osten smelter. Festen starter.
-          </p>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10 }}>
-            <a
-              href="#booking"
-              style={{
-                fontFamily: "'Oswald', sans-serif",
-                fontSize: "clamp(14px,1.4vw,18px)",
-                letterSpacing: "0.15em", textTransform: "uppercase",
-                background: "var(--y)", color: "var(--ink)",
-                padding: "14px 36px", textDecoration: "none",
-                display: "inline-block",
-                transition: "background 0.2s, transform 0.15s",
-              }}
-              onMouseEnter={e => {
-                const el = e.currentTarget;
-                el.style.background = "var(--hot)";
-                el.style.color = "#fff";
-                el.style.transform = "translateY(-2px)";
-              }}
-              onMouseLeave={e => {
-                const el = e.currentTarget;
-                el.style.background = "var(--y)";
-                el.style.color = "var(--ink)";
-                el.style.transform = "none";
-              }}
+          {/* VI SMELTER OST */}
+          <div
+            className="text-[clamp(60px,10vw,140px)] leading-[0.9] uppercase tracking-wide relative inline-block"
+            style={{ fontFamily: "var(--font-bangers)" }}
+          >
+            <motion.span
+              className="text-transparent"
+              style={{ WebkitTextStroke: "6px #1a0a00" }}
+              initial={{ opacity: 1 }}
+              animate={{ opacity: 0 }}
+              transition={{ duration: 1, delay: 4.2, ease: "easeOut" }}
             >
-              Book en dato →
-            </a>
-            <a
-              href="#menu"
-              style={{
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase",
-                color: "rgba(240,230,208,0.3)", textDecoration: "none",
-                borderBottom: "1px solid rgba(240,230,208,0.15)", paddingBottom: 1,
-              }}
+              VI SMELTER OST
+            </motion.span>
+
+            <motion.div
+              initial={{ clipPath: "inset(100% 0 0 0)" }}
+              animate={{ clipPath: "inset(-10px -10px -10px -10px)" }}
+              transition={{ duration: 3, delay: 1, ease: [0.25, 1, 0.5, 1] }}
+              className="absolute top-0 left-0 w-full text-[#DDA221]"
+              style={{ mixBlendMode: "screen", textShadow: "2px 2px 0 #1a0a00, -2px 2px 0 #1a0a00, 2px -2px 0 #1a0a00, -2px -2px 0 #1a0a00" }}
             >
-              Hvad vi laver
-            </a>
+              VI SMELTER OST
+            </motion.div>
+
+            {/* Falling droplets */}
+            <div className="absolute top-[100%] left-0 w-full h-[150px] pointer-events-none overflow-hidden">
+              {[20, 35, 65, 80].map((left, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ top: "-10px", opacity: 0, scaleY: 0.5 }}
+                  animate={{ top: "100%", opacity: [0, 1, 0], scaleY: 1.5 }}
+                  transition={{
+                    duration: 1.5 + i * 0.4,
+                    repeat: Infinity,
+                    delay: 2 + i * 0.7,
+                    ease: "easeIn",
+                  }}
+                  className="absolute w-[6px] h-[20px] bg-[#DDA221] rounded-full drop-shadow-md"
+                  style={{ left: `${left}%` }}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* TIL DIN FEST */}
+          <div
+            className="text-[clamp(40px,6vw,80px)] text-white tracking-wide mt-4 drop-shadow-2xl"
+            style={{ fontFamily: "var(--font-bangers)" }}
+          >
+            TIL DIN FEST
           </div>
         </motion.div>
-      </motion.div>
 
-      {/* Scroll line */}
-      <div style={{
-        position: "absolute", bottom: 0, left: "5vw",
-        width: 1, height: 80,
-        background: "linear-gradient(to bottom, transparent, rgba(245,194,0,0.5))",
-        zIndex: 2,
-      }} />
+        <motion.p
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="text-[clamp(18px,2vw,24px)] text-[#8A8582] font-light max-w-2xl mb-10"
+        >
+          Vi ruller ind. Osten smelter. Gæsterne glemmer det aldrig.
+        </motion.p>
+
+        {/* Magnetic CTA */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.6 }}>
+          <motion.a
+            href="#booking"
+            onMouseMove={onBtnMouseMove}
+            onMouseLeave={() => { btnX.set(0); btnY.set(0); }}
+            style={{
+              x: btnX,
+              y: btnY,
+              fontFamily: "var(--font-bangers)",
+              animation: "border-pulse 2.5s ease-in-out infinite",
+            }}
+            className="inline-block px-12 py-5 border border-[#DDA221] text-[#DDA221] text-xl tracking-[3px] uppercase transition-colors duration-300 hover:bg-[#DDA221] hover:text-[#050404] cursor-none"
+          >
+            SÆT OS PÅ DIT EVENT →
+          </motion.a>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }

@@ -1,67 +1,212 @@
 "use client";
+
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
 import Image from "next/image";
+import { useRef } from "react";
+
+const USPS = [
+  {
+    title: "ALTID INKLUDERET",
+    body: "Sprøde tortillachips overdænget med vores hemmelige, varme cheddar-sauce og creme fraiche.",
+  },
+  {
+    title: "GÆSTERNE BESTEMMER VARMEN",
+    body: "Frisk chunky salsa og jalapeños — gæsterne topper selv, præcis som de vil have det.",
+  },
+];
+
+// Steam wisps
+const STEAM = [
+  { x: "38%", delay: 0,   dur: 3.8, drift: -18 },
+  { x: "55%", delay: 1.2, dur: 4.4, drift: 14  },
+];
 
 export default function FoodBreak() {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.1, 1.0, 1.1]);
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"],
+  });
+
+  const imgScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
 
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.8 }}
-      style={{
-        width: "100%",
-        height: "clamp(260px,35vw,520px)",
-        position: "relative", overflow: "hidden",
-        display: "flex", alignItems: "center",
-      }}
+    <section
+      id="experience"
+      ref={containerRef}
+      className="relative min-h-screen py-24 px-[5vw] overflow-hidden flex items-center"
     >
-      <motion.div style={{ position: "absolute", inset: 0, scale }}>
-        <Image
-          src="/warmer.jpg"
-          alt="Nachos på stedet"
-          fill
+      {/* Ambient bg — warm embers */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div
+          className="absolute inset-0"
           style={{
-            objectFit: "cover", objectPosition: "center 30%",
-            opacity: 0.4, filter: "saturate(1.3)",
+            background:
+              "radial-gradient(ellipse at 60% 50%, rgba(180,70,0,0.07) 0%, transparent 65%)",
           }}
         />
-      </motion.div>
-
-      <div style={{
-        position: "absolute", inset: 0,
-        background: `
-          linear-gradient(to right, rgba(11,6,3,0.85) 0%, transparent 35%, transparent 65%, rgba(11,6,3,0.85) 100%),
-          linear-gradient(to bottom, rgba(11,6,3,0.4) 0%, transparent 30%, transparent 70%, rgba(11,6,3,0.6) 100%)`,
-      }} />
-
-      <div style={{ position: "relative", zIndex: 2, padding: "0 5vw" }}>
-        <strong style={{
-          display: "block",
-          fontFamily: "'Barlow Condensed', sans-serif",
-          fontSize: "clamp(13px,1.5vw,20px)",
-          letterSpacing: "0.25em", textTransform: "uppercase",
-          color: "var(--y)", fontWeight: 400,
-          marginBottom: 16,
-        }}>
-          Altid frisklavet på stedet
-        </strong>
-        <p style={{
-          fontFamily: "'Oswald', sans-serif",
-          fontSize: "clamp(52px,10vw,140px)",
-          lineHeight: 0.9, letterSpacing: "-0.02em",
-          textTransform: "uppercase",
-          color: "rgba(255,255,255,0.06)",
-        }}>
-          INGEN KOMPROMISER
-        </p>
       </div>
-    </motion.div>
+
+      <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col lg:flex-row gap-20 items-center justify-between">
+        {/* ── LEFT: Text ── */}
+        <div className="flex-1">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 0.8 }}
+            className="kicker"
+          >
+            SIMPELT. SINDSSYGT GODT.
+          </motion.div>
+
+          {/* Two-colour headline */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="mb-8"
+          >
+            <div
+              className="text-[clamp(40px,6vw,80px)] leading-[0.95] tracking-wide text-[#DDA221]"
+              style={{
+                fontFamily: "var(--font-bangers)",
+                textShadow:
+                  "3px 3px 0 #1a0a00, -3px 3px 0 #1a0a00, 3px -3px 0 #1a0a00, -3px -3px 0 #1a0a00",
+              }}
+            >
+              DEN PERFEKTE
+            </div>
+            <div
+              className="text-[clamp(40px,6vw,80px)] leading-[0.95] tracking-wide text-white"
+              style={{
+                fontFamily: "var(--font-bangers)",
+                textShadow:
+                  "3px 3px 0 #1a0a00, -3px 3px 0 #1a0a00, 3px -3px 0 #1a0a00, -3px -3px 0 #1a0a00",
+              }}
+            >
+              NACHOS BAKKE
+            </div>
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-[clamp(17px,1.8vw,22px)] text-[#8A8582] font-light max-w-xl mb-12 leading-relaxed"
+          >
+            Ingen menukort. Ingen bøvl.
+            <br />
+            Vi ruller ind, osten smelter, og gæsterne får noget de faktisk husker.
+          </motion.p>
+
+          {/* USPs */}
+          <div className="flex flex-col gap-7 mt-4">
+            {USPS.map((usp, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -24 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.6, delay: 0.3 + i * 0.12 }}
+                className="flex gap-4 items-start"
+              >
+                {/* Glowing amber dot */}
+                <div className="mt-[6px] shrink-0 w-3 h-3 rounded-full bg-[#DDA221]"
+                  style={{ boxShadow: "0 0 10px rgba(221,162,33,0.7), 0 0 24px rgba(221,162,33,0.35)" }}
+                />
+                <div>
+                  <h3
+                    className="text-[clamp(20px,2vw,28px)] tracking-wide mb-1 text-white"
+                    style={{
+                      fontFamily: "var(--font-bangers)",
+                      textShadow:
+                        "2px 2px 0 #1a0a00, -2px 2px 0 #1a0a00, 2px -2px 0 #1a0a00, -2px -2px 0 #1a0a00",
+                    }}
+                  >
+                    {usp.title}
+                  </h3>
+                  <p className="text-base text-[#8A8582] font-light leading-snug">{usp.body}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── RIGHT: Image + effects ── */}
+        <div className="flex-1 w-full relative">
+          {/* Warm glow halo behind image */}
+          <div
+            className="absolute inset-0 pointer-events-none z-0"
+            style={{
+              background:
+                "radial-gradient(ellipse at 50% 60%, rgba(200,90,0,0.32) 0%, rgba(180,60,0,0.12) 40%, transparent 70%)",
+              filter: "blur(32px)",
+              transform: "scale(1.15)",
+            }}
+          />
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            className="relative w-full aspect-[4/5] overflow-hidden z-10"
+          >
+            {/* Scroll-scale image */}
+            <motion.div
+              style={{ scale: imgScale }}
+              className="absolute inset-0 w-full h-full cinematic-fade-right"
+            >
+              <Image
+                src="/images/food-cheese-pour.jpg"
+                alt="Melted Cheese Over Nachos"
+                fill
+                className="object-cover"
+              />
+            </motion.div>
+
+            {/* Steam wisps */}
+            <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden">
+              {STEAM.map((s, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute bottom-[18%]"
+                  style={{ left: s.x, width: 28, height: 90 }}
+                  animate={{
+                    y: [0, -90],
+                    x: [0, s.drift],
+                    opacity: [0, 0.55, 0],
+                    scaleX: [0.7, 1.3],
+                  }}
+                  transition={{
+                    duration: s.dur,
+                    delay: s.delay,
+                    repeat: Infinity,
+                    ease: "easeOut",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      background:
+                        "radial-gradient(ellipse at 50% 80%, rgba(255,200,120,0.45) 0%, transparent 70%)",
+                      filter: "blur(6px)",
+                      borderRadius: "50%",
+                    }}
+                  />
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Bottom vignette to connect with text column */}
+            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[#050404]/60 z-10 pointer-events-none" />
+          </motion.div>
+        </div>
+      </div>
+    </section>
   );
 }

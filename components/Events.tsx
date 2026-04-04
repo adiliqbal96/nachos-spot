@@ -1,255 +1,203 @@
 "use client";
-import { motion } from "framer-motion";
-import Image from "next/image";
-import { useState } from "react";
 
-function EventCell({
-  children, className, style, delay = 0,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  style?: React.CSSProperties;
-  delay?: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ delay, duration: 0.6 }}
-      className={className}
-      style={style}
-    >
-      {children}
-    </motion.div>
-  );
-}
+import { motion, useScroll, useTransform } from "framer-motion";
+import Image from "next/image";
+import { useRef } from "react";
+
+const TAGS = ["Firmafest", "Bryllup", "Festival", "Privatfest", "Koncert", "Marked"];
 
 export default function Events() {
-  const [hovered, setHovered] = useState<number | null>(null);
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"],
+  });
 
-  const cellBase: React.CSSProperties = {
-    background: "var(--ink)",
-    position: "relative", overflow: "hidden",
-    display: "flex", flexDirection: "column", justifyContent: "flex-end",
-    minHeight: 240,
-  };
-
-  const grad: React.CSSProperties = {
-    position: "absolute", inset: 0,
-    background: "linear-gradient(to top, rgba(11,6,3,0.95) 0%, rgba(11,6,3,0.2) 50%, transparent 100%)",
-  };
-
-  const content: React.CSSProperties = {
-    position: "relative", zIndex: 2,
-    padding: "clamp(20px,2.5vw,32px)",
-  };
-
-  const evType: React.CSSProperties = {
-    fontFamily: "'Barlow Condensed', sans-serif",
-    fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
-    color: "var(--y)", marginBottom: 8,
-  };
-
-  const evName: React.CSSProperties = {
-    fontFamily: "'Oswald', sans-serif",
-    fontSize: "clamp(22px,3vw,42px)",
-    lineHeight: 0.95, letterSpacing: "0.01em",
-    textTransform: "uppercase", color: "#fff",
-  };
-
-  const evSub: React.CSSProperties = {
-    fontFamily: "'Barlow Condensed', sans-serif",
-    fontStyle: "italic",
-    fontSize: "clamp(12px,1vw,14px)",
-    color: "rgba(240,230,208,0.4)",
-    letterSpacing: "0.05em", marginTop: 6,
-  };
+  const yA = useTransform(scrollYProgress, [0, 1], ["0%", "-10%"]);
+  const yB = useTransform(scrollYProgress, [0, 1], ["0%",  "10%"]);
 
   return (
-    <section id="events" style={{ padding: "clamp(60px,8vw,120px) 0 0", overflow: "hidden" }}>
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.7 }}
-        style={{ padding: "0 5vw clamp(40px,5vw,70px)" }}
-      >
-        <h2 style={{
-          fontFamily: "'Oswald', sans-serif",
-          fontSize: "clamp(11px,1.1vw,14px)",
-          letterSpacing: "0.25em", textTransform: "uppercase",
-          color: "rgba(240,230,208,0.3)", fontWeight: 400,
-          marginBottom: 16,
-        }}>
-          Til dit event
-        </h2>
-        <p style={{
-          fontFamily: "'Oswald', sans-serif",
-          fontSize: "clamp(36px,6vw,80px)",
-          lineHeight: 0.92, letterSpacing: "-0.01em",
-          textTransform: "uppercase", color: "#fff",
-          maxWidth: 700,
-        }}>
-          VI RYKKER UD.<br />
-          DU <span style={{ color: "var(--y)" }}>NYDER</span> DET.
-        </p>
-      </motion.div>
+    <section
+      id="events"
+      ref={containerRef}
+      className="relative min-h-screen py-32 px-[5vw] overflow-hidden bg-[#050404]"
+    >
+      {/* Warm glow — sits behind the collage */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          left: "-5%", top: "10%",
+          width: "60%", height: "80%",
+          background: "radial-gradient(ellipse at 40% 50%, rgba(180,70,0,0.18) 0%, transparent 65%)",
+          filter: "blur(50px)",
+        }}
+      />
 
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "1.4fr 1fr 1fr",
-        gridTemplateRows: "auto auto",
-        gap: 3,
-      }}>
-        {/* Tall cell - Fester */}
-        <EventCell delay={0.1} style={{ ...cellBase, gridRow: "span 2", minHeight: 480 }}>
-          <Image
-            src="/cart.jpg" alt="Fester og fejringer" fill
-            style={{ objectFit: "cover", objectPosition: "center",
-              transform: hovered === 0 ? "scale(1.04)" : "scale(1)",
-              transition: "transform 0.6s ease",
-            }}
-            onMouseEnter={() => setHovered(0)}
-            onMouseLeave={() => setHovered(null)}
-          />
-          <div style={grad} />
-          <div style={content}>
-            <div style={evType}>Privat</div>
-            <div style={evName}>FESTER &amp;<br />FEJRINGER</div>
-            <div style={evSub}>Fødselsdage · Bryllupper · Dimissioner</div>
-          </div>
-        </EventCell>
+      <div className="relative z-10 max-w-7xl mx-auto flex flex-col lg:flex-row gap-20 items-center">
 
-        {/* Firmaevents */}
-        <EventCell delay={0.2} style={cellBase}>
-          <Image
-            src="/setup.jpg" alt="Firmaevents" fill
-            style={{ objectFit: "cover", objectPosition: "center bottom",
-              transform: hovered === 1 ? "scale(1.04)" : "scale(1)",
-              transition: "transform 0.6s ease",
-            }}
-            onMouseEnter={() => setHovered(1)}
-            onMouseLeave={() => setHovered(null)}
-          />
-          <div style={grad} />
-          <div style={content}>
-            <div style={evType}>Erhverv</div>
-            <div style={evName}>FIRMA&shy;EVENTS</div>
-            <div style={evSub}>Glem kaffe og croissanter</div>
-          </div>
-        </EventCell>
+        {/* ── LEFT — scattered collage ── */}
+        <div className="flex-1 relative" style={{ minHeight: 700 }}>
 
-        {/* CTA cell */}
-        <EventCell delay={0.3} style={{
-          ...cellBase,
-          background: "var(--y)",
-          justifyContent: "center", alignItems: "flex-start",
-          padding: "clamp(28px,3vw,44px)",
-        }}>
-          <div style={{
-            fontFamily: "'Oswald', sans-serif",
-            fontSize: "clamp(28px,4vw,56px)",
-            lineHeight: 0.92, letterSpacing: "-0.01em",
-            textTransform: "uppercase", color: "var(--ink)",
-            marginBottom: 28,
-          }}>
-            HVORNÅR<br />ER DIT<br />NÆSTE<br />EVENT?
-          </div>
-          <a
-            href="#booking"
-            style={{
-              fontFamily: "'Barlow Condensed', sans-serif",
-              fontWeight: 700, fontSize: 13, letterSpacing: "0.2em",
-              textTransform: "uppercase", textDecoration: "none",
-              background: "var(--ink)", color: "var(--y)",
-              padding: "12px 28px",
-              transition: "background 0.2s, color 0.2s",
-              display: "inline-block",
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.background = "var(--hot)";
-              e.currentTarget.style.color = "#fff";
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.background = "var(--ink)";
-              e.currentTarget.style.color = "var(--y)";
-            }}
-          >
-            Book os nu →
-          </a>
-        </EventCell>
-
-        {/* Festivaler - wide */}
-        <EventCell delay={0.4} style={{ ...cellBase, gridColumn: "span 2" }}>
-          <div style={{
-            position: "absolute", inset: 0,
-            background: "radial-gradient(ellipse 80% 50% at 70% 40%, rgba(160,50,0,0.35), transparent 70%), #180d03",
-          }} />
-          <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.38 }}
-            viewBox="0 0 600 280" fill="none">
-            <path d="M60 230 L180 60 L300 230Z" fill="#F5C200" opacity="0.65" />
-            <path d="M200 240 L340 50 L480 240Z" fill="#D97000" opacity="0.6" />
-            <path d="M400 235 L520 65 L600 235Z" fill="#E07800" opacity="0.55" />
-            <path d="M255 190 Q275 155 260 125 Q245 95 260 65" stroke="#FFD700" strokeWidth="14" strokeLinecap="round" fill="none" opacity="0.7" />
-            <ellipse cx="270" cy="185" rx="70" ry="25" fill="#F5C200" opacity="0.5" />
-          </svg>
-          <div style={grad} />
-          <div style={content}>
-            <div style={evType}>Outdoor</div>
-            <div style={evName}>MARKEDER &amp; FESTIVALER</div>
-            <div style={evSub}>Fra 50 til 5000 gæster · Vi klarer det hele</div>
-          </div>
-        </EventCell>
-      </div>
-
-      {/* Food strip */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3, marginTop: 3 }}>
-        {[
-          { label: "Frisklavet", big: "PÅ STEDET", bg: "fc1" },
-          { label: "Altid", big: "FOR MEGET OST", bg: "fc2" },
-        ].map((cell, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.1 + 0.3, duration: 0.7 }}
-            style={{
-              height: "clamp(180px,20vw,280px)",
-              position: "relative", overflow: "hidden",
-              display: "flex", alignItems: "flex-end",
-              background: i === 0
-                ? "radial-gradient(ellipse 70% 80% at 40% 50%, rgba(230,100,0,0.5), rgba(11,6,3,0.3) 70%), #1a0d03"
-                : "radial-gradient(ellipse 80% 60% at 60% 40%, rgba(190,150,0,0.4), rgba(11,6,3,0.3) 70%), #140a01",
-            }}
-          >
-            <div style={{
-              position: "absolute", inset: 0,
-              background: "linear-gradient(to right, rgba(11,6,3,0.7) 0%, transparent 50%)",
-            }} />
-            <div style={{ position: "relative", zIndex: 2, padding: "clamp(16px,2vw,28px)" }}>
-              <strong style={{
-                display: "block",
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: 11, letterSpacing: "0.22em",
-                textTransform: "uppercase", color: "var(--y)",
-                fontWeight: 400, marginBottom: 6,
-              }}>
-                {cell.label}
-              </strong>
-              <span style={{
-                fontFamily: "'Oswald', sans-serif",
-                fontSize: "clamp(32px,5vw,70px)",
-                lineHeight: 1, letterSpacing: "-0.01em",
-                textTransform: "uppercase",
-                color: "rgba(255,255,255,0.06)",
-              }}>
-                {cell.big}
-              </span>
-            </div>
+          {/* Photo A — large, back layer */}
+          <motion.div style={{ y: yA, width: "62%", aspectRatio: "3/4", top: 0, left: 0, zIndex: 1 }} className="absolute">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, ease: [0.25, 1, 0.5, 1] }}
+              whileHover={{ scale: 1.04, rotate: "0deg", zIndex: 20, transition: { duration: 0.3 } }}
+              className="relative w-full h-full overflow-hidden cursor-pointer"
+              style={{ rotate: "-3deg", boxShadow: "0 30px 70px rgba(0,0,0,0.8), 0 8px 24px rgba(0,0,0,0.6)" }}
+            >
+              <Image src="/images/event-setup-stand.jpg" alt="Event stand" fill className="object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050404]/60 via-transparent to-transparent" />
+            </motion.div>
           </motion.div>
-        ))}
+
+          {/* Photo B — top right */}
+          <motion.div style={{ y: yB, width: "46%", aspectRatio: "3/4", top: 30, right: 0, zIndex: 3 }} className="absolute">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, delay: 0.15, ease: [0.25, 1, 0.5, 1] }}
+              whileHover={{ scale: 1.04, rotate: "0deg", zIndex: 20, transition: { duration: 0.3 } }}
+              className="relative w-full h-full overflow-hidden cursor-pointer"
+              style={{ rotate: "2.5deg", boxShadow: "0 30px 70px rgba(0,0,0,0.8), 0 0 0 1px rgba(221,162,33,0.1)" }}
+            >
+              <Image src="/images/warmer.jpg" alt="Warmer" fill className="object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050404]/60 via-transparent to-transparent" />
+            </motion.div>
+          </motion.div>
+
+          {/* Photo C — bottom left, front */}
+          <motion.div style={{ y: yA, width: "48%", aspectRatio: "3/4", bottom: 0, left: "10%", zIndex: 4 }} className="absolute">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, delay: 0.28, ease: [0.25, 1, 0.5, 1] }}
+              whileHover={{ scale: 1.05, rotate: "0deg", zIndex: 20, transition: { duration: 0.3 } }}
+              className="relative w-full h-full overflow-hidden cursor-pointer"
+              style={{ rotate: "1.5deg", boxShadow: "0 30px 70px rgba(0,0,0,0.9), 0 0 0 1px rgba(221,162,33,0.15)" }}
+            >
+              <Image src="/images/food-cheese-pour.jpg" alt="Cheese pour" fill className="object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050404]/50 via-transparent to-transparent" />
+              <div className="absolute inset-0" style={{ boxShadow: "inset 0 0 0 1px rgba(221,162,33,0.2)" }} />
+            </motion.div>
+          </motion.div>
+
+          {/* Photo D — bottom right */}
+          <motion.div style={{ y: yB, width: "40%", aspectRatio: "3/4", bottom: 20, right: "2%", zIndex: 5 }} className="absolute">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, delay: 0.38, ease: [0.25, 1, 0.5, 1] }}
+              whileHover={{ scale: 1.05, rotate: "0deg", zIndex: 20, transition: { duration: 0.3 } }}
+              className="relative w-full h-full overflow-hidden cursor-pointer"
+              style={{ rotate: "-2deg", boxShadow: "0 30px 80px rgba(0,0,0,0.9), 0 0 0 1px rgba(221,162,33,0.12)" }}
+            >
+              <Image src="/images/cart.jpg" alt="Nachos cart" fill className="object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050404]/50 via-transparent to-transparent" />
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* ── RIGHT — text ── */}
+        <div className="flex-1 lg:pl-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="kicker"
+          >
+            OUTDOOR & INDOOR
+          </motion.div>
+
+          {/* Alternating colour headline */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="mb-8"
+          >
+            {[
+              { text: "DIT EVENT",    color: "#DDA221" },
+              { text: "FORTJENER",    color: "#ffffff" },
+              { text: "SMELTET OST", color: "#DDA221" },
+            ].map((line, i) => (
+              <div
+                key={i}
+                className="text-[clamp(42px,5.5vw,76px)] leading-[0.9] tracking-wide"
+                style={{
+                  fontFamily: "var(--font-bangers)",
+                  color: line.color,
+                  textShadow: "3px 3px 0 #1a0a00, -3px 3px 0 #1a0a00, 3px -3px 0 #1a0a00, -3px -3px 0 #1a0a00",
+                }}
+              >
+                {line.text}
+              </div>
+            ))}
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-[clamp(16px,1.7vw,20px)] text-[#8A8582] font-light max-w-sm mb-10 leading-relaxed"
+          >
+            Firmafest, bryllup, festival eller privatfest — vognen ruller, osten smelter, og festen huskes længe efter.
+          </motion.p>
+
+          {/* Tags */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="flex flex-wrap gap-2 mb-12"
+          >
+            {TAGS.map((t, i) => (
+              <motion.span
+                key={i}
+                whileHover={{
+                  borderColor: "rgba(221,162,33,0.55)",
+                  color: "rgba(221,162,33,1)",
+                  backgroundColor: "rgba(221,162,33,0.08)",
+                  y: -3,
+                  transition: { duration: 0.18 },
+                }}
+                className="px-4 py-1.5 text-[11px] tracking-[3px] uppercase font-['Oswald'] text-[#DDA221]/50 border border-[#DDA221]/15 cursor-default select-none"
+              >
+                {t}
+              </motion.span>
+            ))}
+          </motion.div>
+
+          {/* CTA */}
+          <motion.a
+            href="#booking"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.45 }}
+            whileHover={{
+              backgroundColor: "#DDA221",
+              color: "#050404",
+              y: -4,
+              boxShadow: "0 12px 40px rgba(221,162,33,0.35), 0 4px 12px rgba(221,162,33,0.2)",
+              transition: { duration: 0.22 },
+            }}
+            className="inline-block px-12 py-5 border border-[#DDA221] text-[#DDA221] font-['Oswald'] text-sm tracking-[4px] uppercase"
+            style={{ animation: "border-pulse 3s ease-in-out infinite" }}
+          >
+            BOOK OS TIL DIT EVENT →
+          </motion.a>
+        </div>
       </div>
     </section>
   );
