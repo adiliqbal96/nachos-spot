@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
+import { img } from "@/lib/basePath";
 import { useRef } from "react";
 
 const USPS = [
@@ -127,7 +128,7 @@ export default function FoodBreak() {
             className="relative w-full aspect-[4/3] md:aspect-[4/5] overflow-hidden z-10"
           >
             <motion.div style={{ scale: imgScale }} className="absolute inset-0 w-full h-full cinematic-fade-right">
-              <Image src="/images/food-cheese-pour.jpg" alt="Melted Cheese Over Nachos" fill className="object-cover" />
+              <Image src={img("/images/food-cheese-pour.jpg")} alt="Melted Cheese Over Nachos" fill className="object-cover" />
             </motion.div>
 
             <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden">

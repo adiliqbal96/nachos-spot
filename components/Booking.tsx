@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { img } from "@/lib/basePath";
 
 export default function Booking() {
   return (
@@ -12,7 +13,7 @@ export default function Booking() {
       {/* Background — warmer cart photo */}
       <div className="absolute inset-0 pointer-events-none">
         <Image
-          src="/images/cart.jpg"
+          src={img("/images/cart.jpg")}
           alt=""
           fill
           className="object-cover opacity-20"

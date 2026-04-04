@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { img } from "@/lib/basePath";
 import { useState } from "react";
 
 const LINKS = [
@@ -33,7 +34,7 @@ export default function Nav() {
             style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.5))" }}
           >
             <Image
-              src="/images/logo-nachos-spot.png"
+              src={img("/images/logo-nachos-spot.png")}
               alt="Nachos Spot"
               width={220}
               height={94}

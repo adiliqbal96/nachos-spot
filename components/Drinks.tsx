@@ -2,11 +2,12 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { img } from "@/lib/basePath";
 
 const DRINKS = [
-  { name: "MEXIJUNGLE", img: "/images/green-drink-mexijungle.jpg", glow: "rgba(0,210,100,0.55)",  border: "rgba(0,210,100,0.35)"  },
-  { name: "WILDBERRY",  img: "/images/red-drink-wildberry.jpg",    glow: "rgba(220,40,80,0.55)",  border: "rgba(220,40,80,0.35)"  },
-  { name: "SUNSTRIKE",  img: "/images/yellow-drink-sunstrike.jpg", glow: "rgba(255,195,0,0.55)",  border: "rgba(255,195,0,0.35)"  },
+  { name: "MEXIJUNGLE", img: img("/images/green-drink-mexijungle.jpg"), glow: "rgba(0,210,100,0.55)",  border: "rgba(0,210,100,0.35)"  },
+  { name: "WILDBERRY",  img: img("/images/red-drink-wildberry.jpg"),    glow: "rgba(220,40,80,0.55)",  border: "rgba(220,40,80,0.35)"  },
+  { name: "SUNSTRIKE",  img: img("/images/yellow-drink-sunstrike.jpg"), glow: "rgba(255,195,0,0.55)",  border: "rgba(255,195,0,0.35)"  },
 ];
 
 const ICE = [
@@ -51,7 +52,7 @@ export default function Drinks() {
       {/* Background — cold-graded image */}
       <div className="absolute inset-0 pointer-events-none">
         <Image
-          src="/images/drinks-setup.jpg"
+          src={img("/images/drinks-setup.jpg")}
           alt=""
           fill
           className="object-cover"

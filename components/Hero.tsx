@@ -8,6 +8,7 @@ import {
   useTransform,
 } from "framer-motion";
 import Image from "next/image";
+import { img } from "@/lib/basePath";
 import { useRef } from "react";
 
 export default function Hero() {
@@ -49,7 +50,7 @@ export default function Hero() {
       {/* Background */}
       <motion.div style={{ y: yBg }} className="absolute inset-0 w-full h-[120vh]">
         <Image
-          src="/images/hero-founders.png"
+          src={img("/images/hero-founders.png")}
           alt="Nachos Spot Founders"
           fill
           priority

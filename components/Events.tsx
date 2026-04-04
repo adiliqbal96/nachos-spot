@@ -2,15 +2,16 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
+import { img } from "@/lib/basePath";
 import { useRef } from "react";
 
 const TAGS = ["Firmafest", "Bryllup", "Festival", "Privatfest", "Koncert", "Marked"];
 
 const PHOTOS = [
-  { src: "/images/event-setup-stand.jpg", alt: "Event stand" },
-  { src: "/images/warmer.jpg",            alt: "Warmer"      },
-  { src: "/images/food-cheese-pour.jpg",  alt: "Cheese pour" },
-  { src: "/images/cart.jpg",              alt: "Nachos cart" },
+  { src: img("/images/event-setup-stand.jpg"), alt: "Event stand" },
+  { src: img("/images/warmer.jpg"),            alt: "Warmer"      },
+  { src: img("/images/food-cheese-pour.jpg"),  alt: "Cheese pour" },
+  { src: img("/images/cart.jpg"),              alt: "Nachos cart" },
 ];
 
 export default function Events() {
@@ -51,21 +52,21 @@ export default function Events() {
         <div className="hidden lg:block flex-1 relative" style={{ minHeight: 700 }}>
           <motion.div style={{ y: yA, width: "62%", aspectRatio: "3/4", top: 0, left: 0, zIndex: 1 }} className="absolute">
             <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 1, ease: [0.25, 1, 0.5, 1] }} whileHover={{ scale: 1.04, rotate: "0deg", zIndex: 20, transition: { duration: 0.3 } }} className="relative w-full h-full overflow-hidden cursor-pointer" style={{ rotate: "-3deg", boxShadow: "0 30px 70px rgba(0,0,0,0.8)" }}>
-              <Image src="/images/event-setup-stand.jpg" alt="Event stand" fill className="object-cover" />
+              <Image src={img("/images/event-setup-stand.jpg")} alt="Event stand" fill className="object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#050404]/60 via-transparent to-transparent" />
             </motion.div>
           </motion.div>
 
           <motion.div style={{ y: yB, width: "46%", aspectRatio: "3/4", top: 30, right: 0, zIndex: 3 }} className="absolute">
             <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.15, ease: [0.25, 1, 0.5, 1] }} whileHover={{ scale: 1.04, rotate: "0deg", zIndex: 20, transition: { duration: 0.3 } }} className="relative w-full h-full overflow-hidden cursor-pointer" style={{ rotate: "2.5deg", boxShadow: "0 30px 70px rgba(0,0,0,0.8), 0 0 0 1px rgba(221,162,33,0.1)" }}>
-              <Image src="/images/warmer.jpg" alt="Warmer" fill className="object-cover" />
+              <Image src={img("/images/warmer.jpg")} alt="Warmer" fill className="object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#050404]/60 via-transparent to-transparent" />
             </motion.div>
           </motion.div>
 
           <motion.div style={{ y: yA, width: "48%", aspectRatio: "3/4", bottom: 0, left: "10%", zIndex: 4 }} className="absolute">
             <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.28, ease: [0.25, 1, 0.5, 1] }} whileHover={{ scale: 1.05, rotate: "0deg", zIndex: 20, transition: { duration: 0.3 } }} className="relative w-full h-full overflow-hidden cursor-pointer" style={{ rotate: "1.5deg", boxShadow: "0 30px 70px rgba(0,0,0,0.9), 0 0 0 1px rgba(221,162,33,0.15)" }}>
-              <Image src="/images/food-cheese-pour.jpg" alt="Cheese pour" fill className="object-cover" />
+              <Image src={img("/images/food-cheese-pour.jpg")} alt="Cheese pour" fill className="object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#050404]/50 via-transparent to-transparent" />
               <div className="absolute inset-0" style={{ boxShadow: "inset 0 0 0 1px rgba(221,162,33,0.2)" }} />
             </motion.div>
@@ -73,7 +74,7 @@ export default function Events() {
 
           <motion.div style={{ y: yB, width: "40%", aspectRatio: "3/4", bottom: 20, right: "2%", zIndex: 5 }} className="absolute">
             <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.38, ease: [0.25, 1, 0.5, 1] }} whileHover={{ scale: 1.05, rotate: "0deg", zIndex: 20, transition: { duration: 0.3 } }} className="relative w-full h-full overflow-hidden cursor-pointer" style={{ rotate: "-2deg", boxShadow: "0 30px 80px rgba(0,0,0,0.9), 0 0 0 1px rgba(221,162,33,0.12)" }}>
-              <Image src="/images/cart.jpg" alt="Nachos cart" fill className="object-cover" />
+              <Image src={img("/images/cart.jpg")} alt="Nachos cart" fill className="object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#050404]/50 via-transparent to-transparent" />
             </motion.div>
           </motion.div>
