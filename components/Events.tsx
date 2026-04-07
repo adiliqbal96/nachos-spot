@@ -3,7 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import { img } from "@/lib/basePath";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 
 const TAGS = ["Firmafest", "Bryllup", "Festival", "Privatfest", "Koncert", "Marked"];
 
@@ -16,9 +16,43 @@ const PHOTOS = [
 
 export default function Events() {
   const containerRef = useRef(null);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const dotsRef = useRef<HTMLSpanElement[]>([]);
+  const autoSlideRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start end", "end start"] });
   const yA = useTransform(scrollYProgress, [0, 1], ["0%", "-10%"]);
   const yB = useTransform(scrollYProgress, [0, 1], ["0%", "10%"]);
+
+  // Dot sync
+  useEffect(() => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+    const onScroll = () => {
+      const cardW = slider.firstElementChild
+        ? (slider.firstElementChild as HTMLElement).offsetWidth + 14
+        : slider.offsetWidth;
+      const idx = Math.round(slider.scrollLeft / cardW);
+      dotsRef.current.forEach((d, i) => d?.classList.toggle("active", i === idx));
+    };
+    slider.addEventListener("scroll", onScroll, { passive: true });
+    return () => slider.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Auto-slide
+  useEffect(() => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+    let current = 0;
+    autoSlideRef.current = setInterval(() => {
+      current = (current + 1) % PHOTOS.length;
+      const cardW = slider.firstElementChild
+        ? (slider.firstElementChild as HTMLElement).offsetWidth + 14
+        : slider.offsetWidth;
+      slider.scrollTo({ left: current * cardW, behavior: "smooth" });
+    }, 4000);
+    return () => { if (autoSlideRef.current) clearInterval(autoSlideRef.current); };
+  }, []);
 
   return (
     <section
@@ -28,28 +62,126 @@ export default function Events() {
     >
       <div className="absolute pointer-events-none" style={{ left: "-5%", top: "10%", width: "60%", height: "80%", background: "radial-gradient(ellipse at 40% 50%, rgba(180,70,0,0.18) 0%, transparent 65%)", filter: "blur(50px)" }} />
 
-      <div className="relative z-10 max-w-7xl mx-auto flex flex-col lg:flex-row gap-10 lg:gap-20 items-center">
+      {/* ── MOBILE layout ── */}
+      <div className="lg:hidden relative z-10 flex flex-col gap-5">
 
-        {/* ── MOBILE: simple 2×2 grid ── */}
-        <div className="grid grid-cols-2 gap-3 w-full lg:hidden">
-          {PHOTOS.map((p, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: i * 0.1 }}
-              className="relative w-full aspect-square overflow-hidden"
-              style={{ boxShadow: "0 10px 30px rgba(0,0,0,0.7)" }}
-            >
-              <Image src={p.src} alt={p.alt} fill className="object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#050404]/50 to-transparent" />
-            </motion.div>
-          ))}
+        {/* Headline */}
+        <div>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-[clamp(36px,10vw,54px)] leading-[0.92] tracking-wide mb-2"
+            style={{ fontFamily: "var(--font-bangers)", textShadow: "3px 3px 0 #1a0a00, -3px 3px 0 #1a0a00" }}
+          >
+            <span style={{ color: "#DDA221" }}>NACHOS</span>
+            <br />
+            <span className="text-white">TIL EVENTS</span>
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.08 }}
+            className="text-[14px] text-[#8A8582] font-light leading-snug"
+          >
+            Perfekt til festivaler, firmaevents og private arrangementer.
+          </motion.p>
         </div>
 
-        {/* ── DESKTOP: scattered collage ── */}
-        <div className="hidden lg:block flex-1 relative" style={{ minHeight: 700 }}>
+        {/* CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.12 }}
+        >
+          <a
+            href="#booking"
+            className="block w-full text-center py-[18px] bg-[#DDA221] text-[#050404] font-['Oswald'] text-sm tracking-[3px] uppercase font-semibold"
+          >
+            BOOK OS TIL DIT EVENT →
+          </a>
+          <p className="text-center text-[11px] text-[#8A8582] tracking-[2px] uppercase font-['Oswald'] mt-2">
+            Svar inden for 24 timer
+          </p>
+        </motion.div>
+
+        {/* Value props */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.16 }}
+          className="flex flex-col gap-2"
+        >
+          {["Altid frisklavet", "Hurtig servering", "Perfekt til alle typer events"].map((v, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#DDA221] shrink-0" style={{ boxShadow: "0 0 8px rgba(221,162,33,0.7)" }} />
+              <span className="text-[13px] text-[#8A8582] font-['Oswald'] tracking-[1px] uppercase">{v}</span>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* Image slider */}
+        <div>
+          <div
+            ref={sliderRef}
+            className="events-mobile-slider"
+            onTouchStart={() => { if (autoSlideRef.current) { clearInterval(autoSlideRef.current); autoSlideRef.current = null; } }}
+          >
+            {PHOTOS.map((p, i) => (
+              <div key={i} className="events-slide relative overflow-hidden shrink-0">
+                <Image src={p.src} alt={p.alt} fill className="object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#050404]/50 to-transparent" />
+              </div>
+            ))}
+          </div>
+
+          {/* Dots */}
+          <div className="flex justify-center gap-2 mt-3">
+            {PHOTOS.map((_, i) => (
+              <span
+                key={i}
+                ref={el => { if (el) dotsRef.current[i] = el; }}
+                className={`events-dot${i === 0 ? " active" : ""}`}
+                onClick={() => {
+                  const slider = sliderRef.current;
+                  if (!slider) return;
+                  const cardW = (slider.firstElementChild as HTMLElement)?.offsetWidth + 14;
+                  slider.scrollTo({ left: i * cardW, behavior: "smooth" });
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Event type tags */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <p className="text-[11px] text-[#DDA221]/60 tracking-[3px] uppercase font-['Oswald'] mb-2">
+            Vi dækker alle typer events:
+          </p>
+          <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+            {TAGS.map((t, i) => (
+              <span key={i} className="shrink-0 px-3 py-2 text-[10px] tracking-[2px] uppercase font-['Oswald'] text-[#DDA221]/60 border border-[#DDA221]/20 whitespace-nowrap">
+                {t}
+              </span>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* ── DESKTOP layout (unchanged) ── */}
+      <div className="hidden lg:flex relative z-10 max-w-7xl mx-auto flex-col lg:flex-row gap-10 lg:gap-20 items-center">
+
+        {/* Scattered collage */}
+        <div className="flex-1 relative" style={{ minHeight: 700 }}>
           <motion.div style={{ y: yA, width: "62%", aspectRatio: "3/4", top: 0, left: 0, zIndex: 1 }} className="absolute">
             <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 1, ease: [0.25, 1, 0.5, 1] }} whileHover={{ scale: 1.04, rotate: "0deg", zIndex: 20, transition: { duration: 0.3 } }} className="relative w-full h-full overflow-hidden cursor-pointer" style={{ rotate: "-3deg", boxShadow: "0 30px 70px rgba(0,0,0,0.8)" }}>
               <Image src={img("/images/event-setup-stand.jpg")} alt="Event stand" fill className="object-cover" />
@@ -80,7 +212,7 @@ export default function Events() {
           </motion.div>
         </div>
 
-        {/* ── Text ── */}
+        {/* Text */}
         <div className="flex-1 lg:pl-6 w-full">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="kicker">
             OUTDOOR & INDOOR

@@ -38,10 +38,10 @@ export default function Hero() {
       id="hero"
       ref={containerRef}
       onMouseMove={onSectionMouseMove}
-      className="relative min-h-screen flex items-center justify-start overflow-hidden px-[5vw] pt-24 scroll-mt-0 bg-[#050404]"
+      className="relative isolate min-h-screen flex items-center justify-start overflow-hidden px-[5vw] pt-24 scroll-mt-0 bg-[#050404]"
     >
-      {/* Background Layer (Explicitly z-0) */}
-      <div className="absolute inset-0 w-full h-full z-0">
+      {/* Background */}
+      <div className="absolute inset-0 w-full h-full">
         <Image
           src={img("/images/hero-founders.png")}
           alt="Nachos Spot Founders"
@@ -50,10 +50,9 @@ export default function Hero() {
           className="object-cover object-[72%_40%] md:object-[center_20%]"
           style={{ animation: "slowZoom 12s ease-in-out infinite alternate" }}
         />
-        {/* Lightened Overlays for a more vibrant "mobile-like" vibe */}
-        <div className="hero-dim absolute inset-0 bg-[#050404]/30 mix-blend-multiply" />
-        <div className="hero-dim absolute inset-0 bg-black/10" />
-        <div className="absolute inset-0 pointer-events-none" style={{ backdropFilter: "blur(0.4px)", animation: "heatWave 6s ease-in-out infinite" }} />
+        <div className="hero-dim absolute inset-0 bg-[#050404]/60 mix-blend-multiply" />
+        <div className="hero-dim absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 pointer-events-none" style={{ backdropFilter: "blur(0.6px)", animation: "heatWave 6s ease-in-out infinite" }} />
       </div>
 
       {/* Content — full width on mobile, 65% on desktop */}
@@ -76,15 +75,44 @@ export default function Hero() {
           transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
           className="relative z-10 flex flex-col items-start mb-6 md:mb-10"
         >
-          {/* VI SMELTER OST - Clean Static Version */}
+          {/* VI SMELTER OST */}
           <div
-            className="text-[clamp(48px,10vw,140px)] leading-[0.9] uppercase tracking-wide relative inline-block text-[#EFB11D]"
-            style={{ 
-              fontFamily: "var(--font-bangers)",
-              textShadow: "4px 4px 0 #1a0a00, 2px 2px 0 #1a0a00, -2px -2px 0 #1a0a00, 2px -2px 0 #1a0a00, -2px 2px 0 #1a0a00"
-            }}
+            className="text-[clamp(48px,10vw,140px)] leading-[0.9] uppercase tracking-wide relative inline-block"
+            style={{ fontFamily: "var(--font-bangers)" }}
           >
-            VI SMELTER OST
+            <motion.span
+              className="text-transparent"
+              style={{ WebkitTextStroke: "6px #1a0a00" }}
+              initial={{ opacity: 1 }}
+              animate={{ opacity: 0 }}
+              transition={{ duration: 1, delay: 4.2, ease: "easeOut" }}
+            >
+              VI SMELTER OST
+            </motion.span>
+
+            <motion.div
+              initial={{ clipPath: "inset(100% 0 0 0)" }}
+              animate={{ clipPath: "inset(-10px -10px -10px -10px)" }}
+              transition={{ duration: 3, delay: 1, ease: [0.25, 1, 0.5, 1] }}
+              className="absolute top-0 left-0 w-full text-[#DDA221]"
+              style={{ mixBlendMode: "screen", textShadow: "2px 2px 0 #1a0a00, -2px 2px 0 #1a0a00, 2px -2px 0 #1a0a00, -2px -2px 0 #1a0a00" }}
+            >
+              VI SMELTER OST
+            </motion.div>
+
+            {/* Falling droplets */}
+            <div className="absolute top-[100%] left-0 w-full h-[100px] pointer-events-none overflow-hidden">
+              {[20, 35, 65, 80].map((left, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ top: "-10px", opacity: 0, scaleY: 0.5 }}
+                  animate={{ top: "100%", opacity: [0, 1, 0], scaleY: 1.5 }}
+                  transition={{ duration: 1.5 + i * 0.4, repeat: Infinity, delay: 2 + i * 0.7, ease: "easeIn" }}
+                  className="absolute w-[5px] h-[16px] bg-[#DDA221] rounded-full drop-shadow-md"
+                  style={{ left: `${left}%` }}
+                />
+              ))}
+            </div>
           </div>
 
           {/* TIL DIN FEST */}

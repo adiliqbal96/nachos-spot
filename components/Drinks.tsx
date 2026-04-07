@@ -51,7 +51,10 @@ export default function Drinks() {
     if (!slider) return;
     const dots = document.querySelectorAll("#drinks-dots span");
     const onScroll = () => {
-      const idx = Math.round(slider.scrollLeft / slider.offsetWidth);
+      const cardWidth = slider.firstElementChild
+        ? (slider.firstElementChild as HTMLElement).offsetWidth + 14
+        : slider.offsetWidth;
+      const idx = Math.round(slider.scrollLeft / cardWidth);
       dots.forEach((d, i) => d.classList.toggle("active", i === idx));
     };
     slider.addEventListener("scroll", onScroll, { passive: true });
@@ -61,7 +64,7 @@ export default function Drinks() {
   return (
     <section
       id="drinks"
-      className="relative py-16 px-[5vw] overflow-hidden min-h-screen scroll-mt-20"
+      className="relative py-16 px-[5vw] min-h-screen scroll-mt-20"
       style={{ background: "#050404" }}
     >
       {/* Background — cold-graded image */}

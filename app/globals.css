@@ -55,7 +55,6 @@
 /* ─── MOBILE (≤768px) ─────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
 
-  /* ── Global reset ── */
   html, body { overflow-x: hidden; }
   section     { scroll-margin-top: 72px; }
 
@@ -63,36 +62,49 @@
      HERO
   ───────────────────────────────────────────────────────────────────────── */
   #hero {
-    min-height: 80svh;          /* show CTA above fold */
-    padding-top: 88px;
-    padding-bottom: 40px;
-    justify-content: flex-end;  /* push content down toward CTA */
+    height: 100svh;
+    min-height: 100svh;
+    padding-top: 0;
+    padding-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: stretch;
+    overflow: hidden;
   }
 
-  /* Stronger overlay so text pops over the photo */
-  #hero::before {
+  /* Image fills full hero, no cropping tricks needed */
+  #hero .hero-dim { opacity: 0 !important; }
+
+  /* Single clean gradient — pitch dark at bottom for text, fades out at 60% */
+  #hero::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      to top,
-      rgba(5,4,4,0.92) 0%,
-      rgba(5,4,4,0.55) 50%,
-      rgba(5,4,4,0.2)  100%
-    );
     z-index: 2;
     pointer-events: none;
+    background: linear-gradient(
+      to top,
+      rgba(5,4,4,1)   0%,
+      rgba(5,4,4,0.9) 25%,
+      rgba(5,4,4,0.4) 50%,
+      rgba(5,4,4,0.05) 70%,
+      transparent     90%
+    );
   }
 
-  #hero > * { position: relative; z-index: 3; }
-
-  #hero .kicker {
-    font-size: 10px;
-    letter-spacing: 3px;
-    margin-bottom: 10px;
+  #hero .hero-content {
+    transform: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    position: relative;
+    z-index: 5;
+    padding: 0 5vw 48px;
   }
 
-  /* Full-width gold CTA */
+  #hero .kicker { font-size: 11px; letter-spacing: 3px; margin-bottom: 10px; }
+  #hero p       { max-width: 100% !important; font-size: 15px; margin-bottom: 20px; }
+
   #hero a[href="#booking"] {
     display: block;
     width: 100%;
@@ -106,96 +118,143 @@
   }
 
   /* ─────────────────────────────────────────────────────────────────────────
-     NAV BURGER — bigger tap area
+     NAV
   ───────────────────────────────────────────────────────────────────────── */
   nav button[aria-label="Menu"] {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 48px; height: 48px;
+    display: flex; align-items: center; justify-content: center;
   }
 
   /* ─────────────────────────────────────────────────────────────────────────
-     FOODBREAK
+     FOODBREAK  (#experience) — mobile
   ───────────────────────────────────────────────────────────────────────── */
   #experience {
+    padding-bottom: 40px;
+    position: relative;
+    z-index: 2;
     min-height: unset;
-    padding-top: 56px;
-    padding-bottom: 56px;
     align-items: flex-start;
   }
 
-  /* Image comes FIRST on mobile (visual before text) */
-  #experience > div > div:last-child  { order: -1; }
-  #experience > div > div:first-child { order: 1;  }
-
-  /* Image: wider, shorter on mobile */
-  #experience .aspect-\[4\/5\] {
-    aspect-ratio: 16/9 !important;
-  }
-
-  /* ─────────────────────────────────────────────────────────────────────────
-     EVENTS
-  ───────────────────────────────────────────────────────────────────────── */
-  #events {
-    min-height: unset;
-    padding-top: 56px;
-    padding-bottom: 56px;
-  }
-
-  /* Full-width CTA */
-  #events a[href="#booking"] {
-    display: block;
-    width: 100%;
-    text-align: center;
-    padding: 18px 20px;
-    border-radius: 2px;
-  }
-
-  /* Event tags — bigger tap area */
-  #events span[class*="tracking"] {
-    padding: 10px 14px;
-    font-size: 10px;
-  }
-
-  /* ─────────────────────────────────────────────────────────────────────────
-     DRINKS — premium swipe carousel
-  ───────────────────────────────────────────────────────────────────────── */
-  #drinks {
-    min-height: unset;
-    padding-top: 56px;
-    padding-bottom: 56px;
+  /* Edge-to-edge image, portrait */
+  .experience-img-wrap {
+    width: calc(100% + 10vw);
+    margin-left: -5vw;
+    margin-right: -5vw;
+    aspect-ratio: 3/4;
+    position: relative;
     overflow: hidden;
   }
 
-  #drinks h2 { margin-bottom: 24px; }
+  /* Inner div moved by JS parallax */
+  .experience-img-inner {
+    position: absolute;
+    inset: -6% 0;
+    will-change: transform;
+    transform: scale(1.06);
+    transition: transform 0.05s linear;
+  }
+  .experience-img-inner img { object-fit: cover; width: 100%; height: 100%; }
 
-  /* The slider track */
+  /* Single text-block fade-up animation */
+  .fb-animate {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .fb-animate.fb-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     EVENTS  (#events)
+  ───────────────────────────────────────────────────────────────────────── */
+  #events {
+    padding-top: 64px;
+    padding-bottom: 64px;
+    min-height: unset;
+  }
+
+  /* Mobile slider track */
+  .events-mobile-slider {
+    display: flex;
+    flex-direction: row;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    touch-action: pan-x;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    gap: 14px;
+    margin-left: calc(-5vw);
+    margin-right: calc(-5vw);
+    padding-left: 5vw;
+    padding-right: 5vw;
+    padding-bottom: 4px;
+  }
+  .events-mobile-slider::-webkit-scrollbar { display: none; }
+
+  /* Each slide: full width, 16:9 — compact but cinematic */
+  .events-slide {
+    flex: 0 0 88vw;
+    max-width: 88vw;
+    aspect-ratio: 16/10;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    border: 1px solid rgba(221,162,33,0.12);
+  }
+
+  /* Trailing spacer so last card can snap */
+  .events-mobile-slider::after {
+    content: "";
+    flex: 0 0 5vw;
+    display: block;
+  }
+
+  /* Pagination dots */
+  .events-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(221,162,33,0.25);
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+  }
+  .events-dot.active {
+    background: #DDA221;
+    transform: scale(1.4);
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     DRINKS  — swipe carousel
+  ───────────────────────────────────────────────────────────────────────── */
+  #drinks {
+    padding-top: 64px;
+    padding-bottom: 64px;
+    min-height: unset;
+    overflow-x: clip;
+  }
+
+  #drinks h2 { margin-bottom: 20px; }
+
   #drinks-slider {
     display: flex !important;
     flex-direction: row !important;
     overflow-x: scroll !important;
     overflow-y: hidden !important;
-
-    /* Smooth iOS momentum */
     -webkit-overflow-scrolling: touch;
-
-    /* Snap */
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
-
-    /* Allow horizontal drag without fighting vertical scroll */
     touch-action: pan-x;
-
-    /* Hide scrollbar */
     scrollbar-width: none;
     -ms-overflow-style: none;
-
     gap: 14px !important;
     padding-bottom: 8px;
-
-    /* Bleed outside section padding so first card lines up */
     margin-left: calc(-5vw);
     margin-right: calc(-5vw);
     padding-left: 5vw;
@@ -203,22 +262,19 @@
   }
   #drinks-slider::-webkit-scrollbar { display: none; }
 
-  /* Show 1 full card + peek of next */
   #drinks-slider > * {
-    flex: 0 0 82vw !important;
-    max-width: 82vw !important;
+    flex: 0 0 84vw !important;
+    max-width: 84vw !important;
     scroll-snap-align: start;
-    scroll-snap-stop: always;  /* force one card at a time */
+    scroll-snap-stop: always;
   }
 
-  /* Trailing space so last card can snap */
   #drinks-slider::after {
     content: "";
     flex: 0 0 5vw;
     display: block;
   }
 
-  /* Pagination dots */
   #drinks-dots {
     display: flex;
     justify-content: center;
@@ -226,8 +282,7 @@
     margin-top: 16px;
   }
   #drinks-dots span {
-    width: 6px;
-    height: 6px;
+    width: 6px; height: 6px;
     border-radius: 50%;
     background: rgba(221,162,33,0.25);
     transition: background 0.3s, transform 0.3s;
@@ -238,26 +293,40 @@
   }
 
   /* ─────────────────────────────────────────────────────────────────────────
-     BOOKING / FORM
+     BOOKING  (#booking)
   ───────────────────────────────────────────────────────────────────────── */
   #booking {
-    min-height: unset;
     padding-top: 72px;
-    padding-bottom: 56px;
+    padding-bottom: 64px;
+    min-height: unset;
     align-items: flex-start;
   }
 
-  /* Stack form below heading */
-  #booking > div > div:last-child { margin-left: 0 !important; }
+  /* Collapse the massive 80px desktop gap */
+  #booking > div {
+    gap: 40px !important;
+  }
 
-  /* Full-width inputs — prevent iOS zoom (needs ≥16px) */
+  /* Form: remove ml-auto, fill full width */
+  #booking > div > div:last-child {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  #booking form {
+    max-width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  #booking p { max-width: 100% !important; }
+
+  /* iOS zoom prevention + full-width */
   #booking input {
     font-size: 16px !important;
     padding: 18px 0 !important;
     width: 100% !important;
   }
 
-  /* Full-width submit */
   #booking button[type="submit"] {
     width: 100% !important;
     padding: 20px !important;
@@ -268,8 +337,7 @@
     box-shadow: 0 0 20px rgba(221,162,33,0.25);
   }
 
-  /* Trust signals — tighter on mobile */
-  #booking .flex.flex-col.gap-3 { gap: 10px; margin-top: 28px; }
+  #booking .flex.flex-col.gap-3 { gap: 10px; margin-top: 24px; }
 
 }
 /* ─── END MOBILE ─────────────────────────────────────────────────────────── */
