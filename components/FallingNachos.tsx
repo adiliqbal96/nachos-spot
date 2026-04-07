@@ -48,13 +48,13 @@ export default function FallingNachos() {
       setProcessedSrc(canvas.toDataURL());
     };
 
-    // Generate chips
-    const generatedChips = Array.from({ length: 14 }).map((_, i) => ({
+    // Generate chips (halved count, faster speed)
+    const generatedChips = Array.from({ length: 7 }).map((_, i) => ({
       id: i,
       left: `${Math.random() * 100}%`,
-      duration: 15 + Math.random() * 20,
-      delay: Math.random() * 30,
-      size: 70 + Math.random() * 90, // 70-160px (ca. 25-30% mindre end før)
+      duration: 8 + Math.random() * 12, // Faster (8-20s instead of 15-35s)
+      delay: Math.random() * 10,
+      size: 70 + Math.random() * 90, 
       rotateOffset: Math.random() * 360,
     }));
     setChips(generatedChips);
