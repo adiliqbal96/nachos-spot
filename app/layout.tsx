@@ -28,7 +28,6 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <FallingNachos />
         {children}
       </body>
     </html>

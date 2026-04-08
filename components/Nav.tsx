@@ -6,11 +6,12 @@ import { img } from "@/lib/basePath";
 import { useState } from "react";
 
 const LINKS = [
-  { label: "Start",       href: "#hero"       },
-  { label: "Nachos",      href: "#experience" },
-  { label: "Events",      href: "#events"     },
-  { label: "Drinks",      href: "#drinks"     },
-  { label: "Forespørgsel", href: "#booking"   },
+  { label: "Hjem",       href: "#hero"       },
+  { label: "Menu",       href: "#experience" },
+  { label: "Drinks",     href: "#drinks"     },
+  { label: "Galleri",    href: "#events"     },
+  { label: "Om os",      href: "#statement"  },
+  { label: "Kontakt os", href: "#booking"    },
 ];
 
 export default function Nav() {

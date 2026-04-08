@@ -1,73 +1,112 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { img } from "@/lib/basePath";
 
 const DRINKS = [
-  { name: "MEXIJUNGLE", img: img("/images/green-drink-mexijungle.jpg"), glow: "rgba(0,210,100,0.55)",  border: "rgba(0,210,100,0.35)"  },
-  { name: "WILDBERRY",  img: img("/images/red-drink-wildberry.jpg"),    glow: "rgba(220,40,80,0.55)",  border: "rgba(220,40,80,0.35)"  },
-  { name: "SUNSTRIKE",  img: img("/images/yellow-drink-sunstrike.jpg"), glow: "rgba(255,195,0,0.55)",  border: "rgba(255,195,0,0.35)"  },
+  { 
+    name: "WILDBERRY", 
+    img: img("/images/red-drink-wildberry.jpg"),    
+    glow: "rgba(220,40,80,0.55)",  
+    border: "rgba(220,40,80,0.35)",
+    description: "En blend af søde sommerbær og et syrligt touch af lime. Smagen af sol og sommer, serveret iskoldt med masser af knust is. En sikker vinder for alle aldre.",
+    ingredients: "Skovbær, Lime, Mynte, Is",
+    color: "#DC2850"
+  },
+  { 
+    name: "MEXIJUNGLE", 
+    img: img("/images/green-drink-mexijungle.jpg"), 
+    glow: "rgba(0,210,100,0.55)",  
+    border: "rgba(0,210,100,0.35)",
+    description: "Træd ind i junglen med vores signatur-drink. Præcis den rette balance mellem sød kiwi, frisk passionsfrugt og et grønt pift. Eksotisk og intens.",
+    ingredients: "Kiwi, Passion, Lime, Is",
+    color: "#00D264"
+  },
+  { 
+    name: "SUNSTRIKE",  
+    img: img("/images/yellow-drink-sunstrike.jpg"), 
+    glow: "rgba(255,195,0,0.55)",  
+    border: "rgba(255,195,0,0.35)",
+    description: "En solskins-oplevelse i et glas. Friskpresset citrus kombineret med søde ananas-noter. Den perfekte tørstslukker efter en omgang varme nachos.",
+    ingredients: "Citrus, Ananas, Mango, Is",
+    color: "#FFC300"
+  },
 ];
 
-const ICE = [
-  { size: 30, left: "6%",  delay: 0,    dur: 4.8, rot: 15  },
-  { size: 18, left: "16%", delay: 1.0,  dur: 3.6, rot: -22 },
-  { size: 38, left: "27%", delay: 0.4,  dur: 5.5, rot: 32  },
-  { size: 22, left: "38%", delay: 1.6,  dur: 4.1, rot: -12 },
-  { size: 14, left: "50%", delay: 0.7,  dur: 3.8, rot: 28  },
-  { size: 34, left: "61%", delay: 1.3,  dur: 5.0, rot: -40 },
-  { size: 20, left: "72%", delay: 0.2,  dur: 4.4, rot: 20  },
-  { size: 26, left: "82%", delay: 1.8,  dur: 4.0, rot: -18 },
-  { size: 16, left: "91%", delay: 0.9,  dur: 3.5, rot: 45  },
-  { size: 24, left: "12%", delay: 2.2,  dur: 5.2, rot: -30 },
-  { size: 12, left: "56%", delay: 2.8,  dur: 3.3, rot: 55  },
+const ICE_LIME = [
+  { type: "ice",  size: 30, left: "6%",  delay: 0,    dur: 5.8, rot: 15 },
+  { type: "lime", size: 45, left: "16%", delay: 1.5,  dur: 4.6, rot: -22 },
+  { type: "ice",  size: 38, left: "27%", delay: 0.8,  dur: 6.5, rot: 32 },
+  { type: "ice",  size: 22, left: "38%", delay: 2.6,  dur: 5.1, rot: -12 },
+  { type: "lime", size: 50, left: "50%", delay: 1.2,  dur: 4.8, rot: 28 },
+  { type: "ice",  size: 34, left: "61%", delay: 2.3,  dur: 6.0, rot: -40 },
+  { type: "lime", size: 40, left: "72%", delay: 1.2,  dur: 5.4, rot: 20 },
+  { type: "ice",  size: 26, left: "82%", delay: 2.2,  dur: 5.0, rot: -18 },
+  { type: "ice",  size: 16, left: "91%", delay: 1.9,  dur: 4.5, rot: 45 },
 ];
 
-// Floating bubbles
-const BUBBLES = Array.from({ length: 22 }, (_, i) => ({
+const BUBBLES = Array.from({ length: 15 }, (_, i) => ({
   size: 2 + (i % 4),
-  left: `${((i * 4.7) % 94) + 3}%`,
-  duration: 10 + (i % 6) * 2,
-  delay: (i * 0.6) % 8,
-  opacity: 0.18 + (i % 3) * 0.12,
-}));
-
-// Condensation droplets per card
-const DROPS = Array.from({ length: 20 }, (_, i) => ({
-  w: 1 + (i % 3),
-  h: 2 + (i % 4),
-  x: `${((i * 7.1) % 86) + 7}%`,
-  y: `${((i * 11.3) % 75) + 8}%`,
-  opacity: 0.12 + (i % 4) * 0.07,
+  left: `${((i * 6.7) % 94) + 3}%`,
+  duration: 12 + (i % 6) * 3,
+  delay: (i * 0.8) % 10,
+  opacity: 0.12 + (i % 3) * 0.08,
 }));
 
 export default function Drinks() {
-  const sliderRef = useRef<HTMLDivElement>(null);
+  const [flipped, setFlipped] = useState<number | null>(null);
+  const [processedAssets, setProcessedAssets] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const slider = sliderRef.current;
-    if (!slider) return;
-    const dots = document.querySelectorAll("#drinks-dots span");
-    const onScroll = () => {
-      const cardWidth = slider.firstElementChild
-        ? (slider.firstElementChild as HTMLElement).offsetWidth + 14
-        : slider.offsetWidth;
-      const idx = Math.round(slider.scrollLeft / cardWidth);
-      dots.forEach((d, i) => d.classList.toggle("active", i === idx));
+    const assets = [
+      { type: "lime", src: img("/images/lime-slice-cartoon.png") },
+      { type: "ice",  src: img("/images/ice-cube-cartoon.png") },
+    ];
+
+    const processImage = (src: string): Promise<string> => {
+      return new Promise((resolve) => {
+        const imgElement = new window.Image();
+        imgElement.src = src;
+        imgElement.crossOrigin = "anonymous";
+        imgElement.onload = () => {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          if (!ctx) return resolve("");
+          canvas.width = imgElement.width;
+          canvas.height = imgElement.height;
+          ctx.drawImage(imgElement, 0, 0);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const data = imageData.data;
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i], g = data[i + 1], b = data[i + 2];
+            if (r < 40 && g < 40 && b < 40) data[i + 3] = 0;
+          }
+          ctx.putImageData(imageData, 0, 0);
+          resolve(canvas.toDataURL());
+        };
+        imgElement.onerror = () => {
+          console.error("Failed to load: ", src);
+          resolve(src);
+        };
+      });
     };
-    slider.addEventListener("scroll", onScroll, { passive: true });
-    return () => slider.removeEventListener("scroll", onScroll);
+
+    Promise.all(assets.map(a => processImage(a.src))).then(results => {
+      const mapping: Record<string, string> = {};
+      assets.forEach((a, i) => { mapping[a.type] = results[i]; });
+      setProcessedAssets(mapping);
+    });
   }, []);
 
   return (
     <section
       id="drinks"
-      className="relative py-16 px-[5vw] min-h-screen scroll-mt-20"
+      className="relative py-24 px-[5vw] min-h-screen scroll-mt-20 overflow-hidden"
       style={{ background: "#050404" }}
     >
-      {/* Background — cold-graded image */}
+      {/* Background */}
       <div className="absolute inset-0 pointer-events-none">
         <Image
           src={img("/images/drinks-setup.jpg")}
@@ -76,75 +115,47 @@ export default function Drinks() {
           className="object-cover"
           style={{ filter: "saturate(0.2) brightness(0.08)" }}
         />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse at 50% 55%, rgba(221,162,33,0.04) 0%, transparent 65%)",
-          }}
-        />
         <div className="absolute inset-0 bg-gradient-to-b from-[#050404] via-transparent to-[#050404]" />
       </div>
 
-      {/* Falling ice cubes */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {ICE.map((cube, i) => (
-          <motion.div
-            key={`ice-${i}`}
-            className="absolute"
-            style={{
-              left: cube.left,
-              width: cube.size,
-              height: cube.size,
-              borderRadius: "3px 6px 4px 7px",
-              background: "linear-gradient(135deg, rgba(220,242,255,0.22) 0%, rgba(180,215,255,0.06) 55%, rgba(200,230,255,0.14) 100%)",
-              border: "1px solid rgba(215,238,255,0.38)",
-              boxShadow: "inset 1px 1px 3px rgba(255,255,255,0.28), inset -1px -1px 2px rgba(140,195,255,0.1)",
-              rotate: cube.rot,
-              overflow: "hidden",
-            }}
-            animate={{
-              y: ["-5vh", "115vh"],
-              rotate: [cube.rot, cube.rot + 160],
-              opacity: [0, 0.9, 0.9, 0],
-            }}
-            transition={{
-              duration: cube.dur,
-              delay: cube.delay,
-              repeat: Infinity,
-              ease: "linear",
-              times: [0, 0.07, 0.93, 1],
-            }}
-          >
-            <div style={{
-              position: "absolute",
-              top: "8%", left: "8%",
-              width: "38%", height: "38%",
-              background: "rgba(255,255,255,0.45)",
-              borderRadius: "50% 30% 50% 30%",
-              filter: "blur(2px)",
-            }} />
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Floating bubbles */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {BUBBLES.map((b, i) => (
+      {/* Atmospheric Effects: Ice, Lime, Bubbles */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-[5]">
+        {ICE_LIME.map((item, i) => (
           <motion.div
             key={i}
-            className="absolute rounded-full"
-            style={{
-              left: b.left,
-              bottom: "-8px",
-              width: b.size,
-              height: b.size,
-              background: `rgba(180,228,255,${b.opacity})`,
-              boxShadow: `0 0 ${b.size * 3}px rgba(180,228,255,0.25)`,
-            }}
+            className="absolute"
+            initial={{ y: "-10vh", opacity: 0 }}
             animate={{
-              y: [0, "-105vh"],
-              x: [0, i % 2 === 0 ? 10 : -10],
+              y: "110vh",
+              rotate: item.rot + 360,
+              opacity: [0, 1, 1, 0],
+            }}
+            transition={{
+              duration: item.dur,
+              delay: item.delay,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+            style={{ left: item.left, width: item.size, height: item.size }}
+          >
+            {processedAssets[item.type] && (
+              <img 
+                src={processedAssets[item.type]} 
+                alt="" 
+                className="w-full h-full object-contain drop-shadow-[0_10px_20px_rgba(255,255,255,0.4)]"
+              />
+            )}
+          </motion.div>
+        ))}
+
+        {BUBBLES.map((b, i) => (
+          <motion.div
+            key={`b-${i}`}
+            className="absolute rounded-full"
+            initial={{ y: "100vh", opacity: 0 }}
+            animate={{
+              y: "-10vh",
+              x: [0, 15, -15, 0],
               opacity: [0, b.opacity, b.opacity, 0],
             }}
             transition={{
@@ -152,20 +163,23 @@ export default function Drinks() {
               delay: b.delay,
               repeat: Infinity,
               ease: "linear",
-              times: [0, 0.08, 0.92, 1],
+            }}
+            style={{
+              left: b.left,
+              width: b.size,
+              height: b.size,
+              background: `rgba(200,240,255,${b.opacity})`,
             }}
           />
         ))}
       </div>
 
-      {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="kicker mb-4"
+          className="kicker mb-4 text-center md:text-left"
         >
           KOLDT & FRISKT
         </motion.div>
@@ -174,166 +188,98 @@ export default function Drinks() {
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="text-[clamp(36px,6vw,80px)] tracking-wide mb-8 lg:mb-16 text-[#DDA221]"
+          className="text-[clamp(40px,7vw,90px)] tracking-wide mb-12 lg:mb-20 text-[#DDA221] text-center md:text-left"
           style={{
             fontFamily: "var(--font-bangers)",
-            textShadow:
-              "3px 3px 0 #1a0a00, -3px 3px 0 #1a0a00, 3px -3px 0 #1a0a00, -3px -3px 0 #1a0a00",
+            textShadow: "3px 3px 0 #1a0a00",
           }}
         >
           DRINKS TIL DIN FEST
         </motion.h2>
 
-        <div id="drinks-slider" ref={sliderRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-8">
           {DRINKS.map((drink, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: i * 0.15 }}
-              whileHover="hover"
-              animate="rest"
-              variants={{
-                rest: {
-                  y: 0,
-                  scale: 1,
-                  boxShadow: `0 8px 40px rgba(0,0,0,0.6), 0 2px 20px ${drink.glow.replace("0.55", "0.2")}`,
-                },
-                hover: {
-                  y: -14,
-                  scale: 1.03,
-                  boxShadow: `0 24px 60px ${drink.glow}, 0 8px 40px rgba(0,0,0,0.6)`,
-                  transition: { duration: 0.35, ease: [0.25, 1, 0.5, 1] },
-                },
-              }}
-              className="relative overflow-hidden cursor-pointer"
-              style={{
-                background: "rgba(10,8,8,0.85)",
-                border: `1px solid ${drink.border}`,
-                backdropFilter: "blur(18px)",
-              }}
-            >
-              {/* Drink image — name lives inside */}
-              <div className="relative w-full overflow-hidden" style={{ height: "clamp(300px, 45vh, 520px)" }}>
-                {/* Image zoom on hover */}
-                <motion.div
-                  className="absolute inset-0"
+            <div key={i} className="relative h-[500px]" style={{ perspective: "1000px" }}>
+              {/* Front Side */}
+              <motion.div 
+                className="absolute inset-0 w-full h-full cursor-pointer"
+                initial="rest"
+                whileHover={flipped === i ? "rest" : "hover"}
+                animate={{ rotateY: flipped === i ? -180 : 0 }}
+                transition={{ duration: 0.6, ease: "easeInOut" }}
+                onClick={() => setFlipped(flipped === i ? null : i)}
+                style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
+              >
+                <motion.div 
+                  className="relative w-full h-full overflow-hidden border border-white/5 bg-[#0a0808]"
                   variants={{
-                    rest: { scale: 1, filter: "brightness(0.9) saturate(1)" },
-                    hover: {
-                      scale: 1.06,
-                      filter: "brightness(1.15) saturate(1.2)",
-                      transition: { duration: 0.5 },
-                    },
+                    rest: { boxShadow: `0 0 45px ${drink.glow.replace("0.55", "0.35")}` },
+                    hover: { boxShadow: `0 0 90px ${drink.glow.replace("0.55", "0.7")}` }
                   }}
                 >
-                  <Image
-                    src={drink.img}
-                    alt={drink.name}
-                    fill
-                    className="object-cover"
-                  />
-                </motion.div>
-
-                {/* Bottom fade */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#050404] via-transparent to-transparent z-10" />
-
-                {/* Condensation droplets */}
-                <div className="absolute inset-0 z-20 pointer-events-none">
-                  {DROPS.map((d, j) => (
-                    <div
-                      key={j}
-                      className="absolute rounded-full"
-                      style={{
-                        left: d.x,
-                        top: d.y,
-                        width: d.w,
-                        height: d.h,
-                        background: `rgba(210,235,255,${d.opacity})`,
-                        filter: "blur(0.4px)",
-                      }}
-                    />
-                  ))}
-                </div>
-
-                {/* Shimmer sweep — loops every 6s */}
-                <motion.div
-                  className="absolute inset-0 z-30 pointer-events-none"
-                  animate={{ x: ["-100%", "220%"] }}
-                  transition={{
-                    duration: 1.2,
-                    repeat: Infinity,
-                    repeatDelay: 5,
-                    ease: "easeInOut",
-                  }}
-                  style={{
-                    background:
-                      "linear-gradient(108deg, transparent 35%, rgba(200,235,255,0.18) 50%, transparent 65%)",
-                  }}
-                />
-
-                {/* Cold mist on hover */}
-                <motion.div
-                  className="absolute inset-0 z-30 pointer-events-none"
-                  variants={{
-                    rest: { opacity: 0 },
-                    hover: { opacity: 1, transition: { duration: 0.4 } },
-                  }}
-                  style={{
-                    background:
-                      "radial-gradient(circle at 50% 30%, rgba(200,235,255,0.14) 0%, transparent 65%)",
-                  }}
-                />
-
-                {/* Name — inside the image over the fade */}
-                <div className="absolute bottom-0 left-0 w-full px-5 pb-5 z-40 pointer-events-none">
-                  <h3
-                    className="text-[clamp(22px,2.5vw,34px)] text-white tracking-wide"
-                    style={{
-                      fontFamily: "var(--font-bangers)",
-                      textShadow:
-                        "2px 2px 0 #000, -2px 2px 0 #000, 2px -2px 0 #000, -2px -2px 0 #000",
-                    }}
+                  <motion.div 
+                    className="absolute inset-0 z-0"
+                    variants={{ rest: { scale: 1 }, hover: { scale: 1.08 } }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
                   >
-                    {drink.name}
-                  </h3>
+                    <Image src={drink.img} alt={drink.name} fill className="object-cover" />
+                  </motion.div>
+                  
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#050404] via-[#050404]/20 to-transparent z-10 pointer-events-none" />
+                  
+                  {/* Sparkle/Shimmer Effect */}
+                  <motion.div
+                    className="absolute top-0 bottom-0 w-1/2 z-20 pointer-events-none"
+                    style={{
+                      background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)",
+                      transform: "skewX(-20deg)"
+                    }}
+                    variants={{
+                      rest: { left: "-100%", opacity: 0 },
+                      hover: { left: "150%", opacity: 1 }
+                    }}
+                    transition={{ duration: 0.8, ease: "easeInOut" }}
+                  />
+
+                  <div className="absolute bottom-0 left-0 w-full p-6 z-30 pointer-events-none">
+                    <h3 className="text-3xl text-white font-['Bangers'] tracking-widest textShadow-sm">{drink.name}</h3>
+                    <p className="text-[10px] tracking-[4px] uppercase text-[#DDA221] font-['Oswald'] mt-2">Tryk for info</p>
+                  </div>
+                </motion.div>
+              </motion.div>
+
+              {/* Back Side */}
+              <motion.div 
+                className="absolute inset-0 w-full h-full cursor-pointer"
+                initial={false}
+                animate={{ rotateY: flipped === i ? 0 : 180 }}
+                transition={{ duration: 0.6, ease: "easeInOut" }}
+                onClick={() => setFlipped(flipped === i ? null : i)}
+                style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
+              >
+                <div 
+                  className="w-full h-full bg-[#0a0808] border border-white/10 p-8 flex flex-col items-center justify-center text-center"
+                  style={{ boxShadow: `inset 0 0 40px ${drink.glow.replace("0.55", "0.2")}` }}
+                >
+                  <div className="w-12 h-1.5 mb-6" style={{ background: drink.color }} />
+                  <h3 className="text-4xl text-white font-['Bangers'] mb-4 tracking-widest" style={{ color: drink.color }}>{drink.name}</h3>
+                  <p className="text-[17px] text-white/95 font-['Barlow'] font-medium leading-relaxed mb-8 max-w-sm drop-shadow-md">
+                    {drink.description}
+                  </p>
+                  <div className="border-t border-white/10 pt-5 w-full">
+                    <p className="text-[11px] tracking-[4px] uppercase text-[#DDA221] font-['Oswald'] mb-3 font-semibold">Ingredienser</p>
+                    <p className="text-base text-white/90 font-['Oswald'] uppercase tracking-[3px] font-semibold">{drink.ingredients}</p>
+                  </div>
+                  <button className="mt-10 text-[12px] tracking-[4px] uppercase text-white/60 font-['Oswald'] hover:text-white transition-colors hover:scale-105 active:scale-95 duration-200">
+                    Klik for at se billede
+                  </button>
                 </div>
-
-                {/* Color border flash at bottom on hover */}
-                <motion.div
-                  className="absolute bottom-0 left-0 w-full h-[2px] z-50 pointer-events-none"
-                  variants={{
-                    rest: { scaleX: 0, opacity: 0 },
-                    hover: { scaleX: 1, opacity: 1, transition: { duration: 0.4 } },
-                  }}
-                  style={{ background: drink.border, transformOrigin: "left" }}
-                />
-              </div>
-
-              {/* Card border glow on hover */}
-              <motion.div
-                className="absolute inset-0 pointer-events-none rounded-[inherit] z-0"
-                variants={{
-                  rest: { opacity: 0 },
-                  hover: { opacity: 1, transition: { duration: 0.35 } },
-                }}
-                style={{
-                  boxShadow: `inset 0 0 0 1px ${drink.border}`,
-                }}
-              />
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Pagination dots — mobile only */}
-        <div id="drinks-dots" className="lg:hidden">
-          {DRINKS.map((_, i) => (
-            <span key={i} className={i === 0 ? "active" : ""} />
+              </motion.div>
+            </div>
           ))}
         </div>
       </div>
+
     </section>
   );
 }

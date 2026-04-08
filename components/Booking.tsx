@@ -3,8 +3,37 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { img } from "@/lib/basePath";
+import { useState } from "react";
 
 export default function Booking() {
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setStatus("loading");
+    
+    const formData = new FormData(e.currentTarget);
+    const dataObj = Object.fromEntries(formData.entries());
+
+    try {
+      const res = await fetch("/send_email.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataObj)
+      });
+      const data = await res.json();
+      if (data.success) {
+        setStatus("success");
+      } else {
+        setStatus("error");
+      }
+    } catch (error) {
+      console.error(error);
+      setStatus("error");
+    }
+  };
   return (
     <section
       id="booking"
@@ -90,47 +119,105 @@ export default function Booking() {
         </div>
 
         {/* Right — form */}
-        <div className="flex-1 w-full">
-          <motion.form
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-10%" }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="flex flex-col gap-8 w-full max-w-md ml-auto"
-            onSubmit={(e) => e.preventDefault()}
-          >
-            {[
-              "Dit Navn",
-              "E-mail",
-              "Event Type (Firma, Bryllup etc.)",
-              "Estimeret antal gæster",
-              "Dato og Lokation",
-            ].map((placeholder, i) => (
-              <motion.input
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.4 + i * 0.1 }}
-                type={i === 1 ? "email" : "text"}
-                placeholder={placeholder}
-                required
-                className="w-full bg-transparent border-0 border-b border-white/10 py-4 text-white text-xl font-light font-['Barlow'] outline-none transition-colors duration-300 focus:border-[#DDA221] placeholder:text-white/45 placeholder:font-['Oswald'] placeholder:uppercase placeholder:tracking-widest placeholder:text-sm"
-              />
-            ))}
-
-            <motion.button
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: 0.9 }}
-              whileHover={{ backgroundColor: "#DDA221", color: "#050404" }}
-              type="submit"
-              className="mt-6 w-full py-5 border border-[#DDA221] text-[#DDA221] font-['Oswald'] text-sm tracking-[3px] uppercase transition-colors duration-300"
+        <div className="flex-1 w-full bg-[#050404]/80 backdrop-blur-xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] p-8 md:p-12 relative overflow-hidden rounded-sm">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#DDA221]/15 rounded-full blur-[90px] pointer-events-none" />
+          
+          {status === "success" ? (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex flex-col items-center justify-center text-center h-full min-h-[400px]"
             >
-              SEND FORESPØRGSEL
-            </motion.button>
-          </motion.form>
+              <div className="w-20 h-20 bg-[#DDA221]/20 rounded-full flex items-center justify-center mb-6 border border-[#DDA221]/30 shadow-[0_0_30px_rgba(221,162,33,0.3)]">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#DDA221" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+              </div>
+              <h3 className="text-3xl text-white font-['Bangers'] tracking-widest mb-4">TAK FOR DIN FORESPØRGSEL!</h3>
+              <p className="text-[#8A8582] font-light max-w-sm">Vi har modtaget din besked og vender tilbage til dig inden for 24 timer med et festligt tilbud.</p>
+              <button onClick={() => setStatus("idle")} className="mt-8 text-[#DDA221] font-['Oswald'] text-sm tracking-[3px] uppercase hover:text-white transition-colors">
+                Send en ny besked
+              </button>
+            </motion.div>
+          ) : (
+            <motion.form
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-10%" }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="flex flex-col gap-8 w-full max-w-md ml-auto relative z-10"
+              onSubmit={handleSubmit}
+            >
+              <input type="hidden" name="source" value="one-com" />
+
+              {[
+                { name: "navn", label: "Dit Navn", type: "text" },
+                { name: "email", label: "E-mail", type: "email" },
+                { name: "event", label: "Event Type (Firma, Bryllup etc.)", type: "text" },
+                { name: "guests", label: "Estimeret antal gæster", type: "text" },
+                { name: "dato", label: "Dato og Lokation", type: "text" },
+              ].map((field, i) => (
+                <div key={i} className="relative z-0 w-full group">
+                  <input
+                    type={field.type}
+                    name={field.name}
+                    id={field.name}
+                    className="block py-3 px-0 w-full text-xl text-white bg-transparent border-0 border-b-2 border-white/30 appearance-none focus:outline-none focus:ring-0 focus:border-[#DDA221] peer transition-colors font-medium relative z-10"
+                    placeholder=" "
+                    required
+                  />
+                  <label
+                    htmlFor={field.name}
+                    className="absolute text-sm font-['Oswald'] tracking-[3px] uppercase text-white/70 duration-300 transform -translate-y-6 scale-75 top-3 z-0 origin-[0] peer-focus:left-0 peer-focus:text-[#DDA221] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-80 peer-focus:-translate-y-7"
+                  >
+                    {field.label}
+                  </label>
+                </div>
+              ))}
+
+              <div className="relative z-0 w-full group mt-2">
+                <textarea
+                  name="message"
+                  id="message"
+                  rows={3}
+                  className="block py-3 px-0 w-full text-xl text-white bg-transparent border-0 border-b-2 border-white/30 appearance-none focus:outline-none focus:ring-0 focus:border-[#DDA221] peer transition-colors resize-none font-medium relative z-10"
+                  placeholder=" "
+                />
+                <label
+                  htmlFor="message"
+                  className="absolute text-sm font-['Oswald'] tracking-[3px] uppercase text-white/70 duration-300 transform -translate-y-6 scale-75 top-3 z-0 origin-[0] peer-focus:left-0 peer-focus:text-[#DDA221] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-80 peer-focus:-translate-y-7"
+                >
+                  Ekstra besked eller særlige ønsker
+                </label>
+              </div>
+
+              {status === "error" && (
+                <div className="text-red-500 font-['Oswald'] tracking-wider text-xs">
+                  Der opstod en fejl. Prøv venligst igen, eller skriv til os direkte.
+                </div>
+              )}
+
+              <div className="flex flex-col gap-4 mt-6">
+                <motion.button
+                  whileHover={{ backgroundColor: "#DDA221", color: "#050404" }}
+                  type="submit"
+                  disabled={status === "loading"}
+                  className="w-full py-5 border border-[#DDA221] text-[#DDA221] font-['Oswald'] text-sm tracking-[3px] uppercase transition-all duration-300 flex justify-center items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {status === "loading" ? (
+                    <span className="flex items-center gap-2">
+                      <svg className="animate-spin h-4 w-4 text-[#DDA221]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                      SENDER...
+                    </span>
+                  ) : "SEND FORESPØRGSEL"}
+                </motion.button>
+                <div className="text-white/40 text-[10px] tracking-[2px] uppercase font-['Oswald'] text-center">
+                  Eller skriv direkte til <a href="mailto:Nachosspott@gmail.com" className="text-[#DDA221] hover:underline">Nachosspott@gmail.com</a>
+                </div>
+              </div>
+            </motion.form>
+          )}
         </div>
       </div>
     </section>
